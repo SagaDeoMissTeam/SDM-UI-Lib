@@ -1,8 +1,8 @@
 package net.sixik.sdmuilibrary.client.render.container;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 
 import java.util.HashMap;

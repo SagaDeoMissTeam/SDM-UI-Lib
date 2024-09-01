@@ -1,12 +1,13 @@
 package net.sixik.sdmuilibrary.client.utils;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
-import dev.ftb.mods.ftblibrary.icon.Color4I;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -14,9 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 import net.sixik.sdmuilibrary.client.utils.misc.RGBA;
-import org.joml.*;
-
-import java.lang.Math;
+import org.joml.Matrix4f;
 
 public class RenderHelper {
 
@@ -56,10 +55,10 @@ public class RenderHelper {
             if(rgb instanceof RGBA rgba)
                 a = rgba.a;
 
-            buffer.vertex(m, (float)x, (float)(y + h), 0.0F).color(r, g, b, a).endVertex();
-            buffer.vertex(m, (float)(x + w), (float)(y + h), 0.0F).color(r, g, b, a).endVertex();
-            buffer.vertex(m, (float)(x + w), (float)y, 0.0F).color(r, g, b, a).endVertex();
-            buffer.vertex(m, (float)x, (float)y, 0.0F).color(r, g, b, a).endVertex();
+            buffer.addVertex(m, (float)x, (float)(y + h), 0.0F).setColor(r, g, b, a);
+            buffer.addVertex(m, (float)(x + w), (float)(y + h), 0.0F).setColor(r, g, b, a);
+            buffer.addVertex(m, (float)(x + w), (float)y, 0.0F).setColor(r, g, b, a);
+            buffer.addVertex(m, (float)x, (float)y, 0.0F).setColor(r, g, b, a);
         }
     }
 
@@ -69,16 +68,15 @@ public class RenderHelper {
             RGBA e = endRgb.toARGB();
 
             Matrix4f m = graphics.pose().last().pose();
-            buffer.vertex(m, (float)x, (float)(y + h), 0.0F).color(s.r, s.g, s.b, s.a).endVertex();
-            buffer.vertex(m, (float)(x + w), (float)(y + h), 0.0F).color(s.r, s.g, s.b, s.a).endVertex();
-            buffer.vertex(m, (float)(x + w), (float)y, 0.0F).color(e.r,e.g,e.b,e.a).endVertex();
-            buffer.vertex(m, (float)x, (float)y, 0.0F).color(e.r,e.g,e.b,e.a).endVertex();
+            buffer.addVertex(m, (float)x, (float)(y + h), 0.0F).setColor(s.r, s.g, s.b, s.a);
+            buffer.addVertex(m, (float)(x + w), (float)(y + h), 0.0F).setColor(s.r, s.g, s.b, s.a);
+            buffer.addVertex(m, (float)(x + w), (float)y, 0.0F).setColor(e.r,e.g,e.b,e.a);
+            buffer.addVertex(m, (float)x, (float)y, 0.0F).setColor(e.r,e.g,e.b,e.a);
         }
     }
 
     public static void drawLine(GuiGraphics graphics, float x1, float y1, float x2, float y2, float lineWidth, RGB rgb) {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
 
         Matrix4f m = graphics.pose().last().pose();
         int r = rgb.r;
@@ -91,21 +89,17 @@ public class RenderHelper {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.lineWidth(lineWidth);
 
-        bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
 
 
-        bufferBuilder.vertex(m, x1, y1, 0).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(m, x2, y2, 0).color(r, g, b, a).endVertex();
-
-        tesselator.end();
+        bufferBuilder.addVertex(m, x1, y1, 0).setColor(r, g, b, a);
+        bufferBuilder.addVertex(m, x2, y2, 0).setColor(r, g, b, a);
 
         RenderSystem.lineWidth(1f);
     }
 
     public static void drawArc(GuiGraphics graphics, int cX, int cY, int radius, int start, int end, RGB rgb){
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+
         Matrix4f m = graphics.pose().last().pose();
 
         int r = rgb.r;
@@ -121,16 +115,15 @@ public class RenderHelper {
             double angle = Math.toRadians(i);
             float x = (float)(Math.cos(angle) * radius) + cX;
             float y = (float)(Math.sin(angle) * radius) + cY;
-            bufferBuilder.vertex(m, x, y, 0).color(r,g,b,a).endVertex();
+            bufferBuilder.addVertex(m, x, y, 0).setColor(r,g,b,a);
         }
 
-        tesselator.end();
     }
 
     public static void drawFillArc(GuiGraphics graphics, int cX, int cY, int radius, int start, int end, RGB rgb){
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder bufferBuilder = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+
         Matrix4f m = graphics.pose().last().pose();
 
         int r = rgb.r;
@@ -144,10 +137,9 @@ public class RenderHelper {
             double angle = Math.toRadians(i);
             float x = (float)(Math.cos(angle) * radius) + cX;
             float y = (float)(Math.sin(angle) * radius) + cY;
-            bufferBuilder.vertex(m, x, y, 0).color(r,g,b,a).endVertex();
+            bufferBuilder.addVertex(m, x, y, 0).setColor(r,g,b,a);
         }
 
-        tesselator.end();
     }
 
     public static void drawCircle(GuiGraphics graphics, int x, int y, int radius, RGB rgb) {
@@ -162,8 +154,8 @@ public class RenderHelper {
         if (w > 1 && h > 1 && col != null) {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             Tesselator tesselator = Tesselator.getInstance();
-            BufferBuilder buffer = tesselator.getBuilder();
-            buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
             addFillToBuffer(graphics, buffer, x, y + 1, 1, h - 2, col);
             addFillToBuffer(graphics, buffer, x + w - 1, y + 1, 1, h - 2, col);
             if (roundEdges) {
@@ -174,7 +166,6 @@ public class RenderHelper {
                 addFillToBuffer(graphics, buffer, x, y + h - 1, w, 1, col);
             }
 
-            tesselator.end();
         } else {
             col.draw(graphics, x, y, w, h, 0);
         }
@@ -185,11 +176,11 @@ public class RenderHelper {
     }
 
     public static void renderTexture(GuiGraphics guiGraphics, String texture, int x, int y, int width, int height, int textureX, int textureY, int textureW, int textureH, int textureSize){
-        guiGraphics.blit(new ResourceLocation(texture), x,y,width,height, textureX, textureY, textureW, textureH, textureSize, textureSize );
+        guiGraphics.blit(ResourceLocation.parse(texture), x,y,width,height, textureX, textureY, textureW, textureH, textureSize, textureSize );
     }
 
     public static void renderTexture(GuiGraphics guiGraphics, String texture, int x, int y, int width, int height, int textureX, int textureY, int textureW, int textureH, int textureSizeX, int textureSizeY){
-        guiGraphics.blit(new ResourceLocation(texture), x,y,width,height, textureX, textureY, textureW, textureH, textureSizeX, textureSizeY );
+        guiGraphics.blit(ResourceLocation.parse(texture), x,y,width,height, textureX, textureY, textureW, textureH, textureSizeX, textureSizeY );
     }
 
     public static void renderTexture(GuiGraphics guiGraphics, ResourceLocation texture, int x, int y, int width, int height, int textureX, int textureY, int textureW){

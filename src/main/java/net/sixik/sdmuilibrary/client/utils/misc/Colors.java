@@ -1,7 +1,5 @@
 package net.sixik.sdmuilibrary.client.utils.misc;
 
-import dev.ftb.mods.ftblibrary.icon.Color4I;
-
 public interface Colors {
 
 
