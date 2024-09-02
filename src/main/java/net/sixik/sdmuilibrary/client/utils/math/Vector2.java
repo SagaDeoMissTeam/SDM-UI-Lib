@@ -21,4 +21,49 @@ public class Vector2 {
         this.x = x;
         this.y = y;
     }
+
+    public Vector2 add(Vector2 other) {
+        return new Vector2(x + other.x, y + other.y);
+    }
+
+    public Vector2 subtract(Vector2 other) {
+        return new Vector2(x - other.x, y - other.y);
+    }
+
+    public Vector2 multiply(int scalar) {
+        return new Vector2(x * scalar, y * scalar);
+    }
+
+    public Vector2 divide(int scalar) {
+        return new Vector2(x / scalar, y / scalar);
+    }
+
+    public double length() {
+        return Math.sqrt(x * x + y * y);
+    }
+
+    public Vector2 normalize() {
+        double len = length();
+        return new Vector2((int) (x / len), (int) (y / len));
+    }
+
+    public double dot(Vector2 other) {
+        return x * other.x + y * other.y;
+    }
+
+    public Vector2 cross(Vector2 other) {
+        return new Vector2(y * other.x - x * other.y, x * other.y + y * other.x);
+    }
+
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Vector2)) return false;
+        Vector2 other = (Vector2) obj;
+        return x == other.x && y == other.y;
+    }
+
+    public static Vector2 of(int x, int y) {
+        return new Vector2(x, y);
+    }
+
 }

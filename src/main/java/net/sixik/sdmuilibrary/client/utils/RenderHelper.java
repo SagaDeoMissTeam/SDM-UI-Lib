@@ -11,12 +11,17 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
+import net.sixik.sdmuilibrary.client.utils.misc.CenterOperators;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 import net.sixik.sdmuilibrary.client.utils.misc.RGBA;
 import org.joml.*;
 
 import java.lang.Math;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -24,6 +29,17 @@ import java.lang.Math;
  */
 public class RenderHelper {
 
+    public static Vector2 getScreenSize(){
+        return new Vector2(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getGuiScaledHeight());
+    }
+
+    public static Vector2 getScreenCenter(){
+        return new Vector2(getScreenSize().x / 2, getScreenSize().y / 2);
+    }
+
+    public static Vector2 getScreenCenter(CenterOperators.Type centerType, CenterOperators.Method method){
+        return GLHelper.getCenterWithPos(new Vector2(0,0), getScreenSize(), centerType, method);
+    }
 
     /**
      * Prepares the rendering environment for a texture.
@@ -102,6 +118,33 @@ public class RenderHelper {
         }
     }
 
+    public static void addFillTriangleToBuffer(GuiGraphics graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB rgb){
+        buffer.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        Matrix4f m = graphics.pose().last().pose();
+        int r = rgb.r;
+        int g = rgb.g;
+        int b = rgb.b;
+        int a = 255;
+        if(rgb instanceof RGBA rgba)
+            a = rgba.a;
+
+
+        buffer.vertex(m, x, y, 0.0F).color(r,g,b,a).endVertex();
+        buffer.vertex(m, (float) (x + (w / 2)), y + h, 0.0F).color(r,g,b,a).endVertex();
+        buffer.vertex(m, x + w, y, 0.0F).color(r,g,b,a).endVertex();
+    }
+
+    public static void addFillTriangleToBufferGradient(GuiGraphics graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB startRgb, RGB endRgb){
+        buffer.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        RGBA s = startRgb.toARGB();
+        RGBA e = endRgb.toARGB();
+
+        Matrix4f m = graphics.pose().last().pose();
+        buffer.vertex(m, x, y, 0.0F).color(e.r,e.g,e.b,e.a).endVertex();
+        buffer.vertex(m, (float) (x + (w / 2)), y + h, 0.0F).color(s.r, s.g,s.b,s.a).endVertex();
+        buffer.vertex(m, x + w, y, 0.0F).color(e.r,e.g,e.b,e.a).endVertex();
+    }
+
     public static void addFillToBufferGradient(GuiGraphics graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB startRgb, RGB endRgb){
         if (w > 0 && h > 0) {
             RGBA s = startRgb.toARGB();
@@ -166,26 +209,35 @@ public class RenderHelper {
         tesselator.end();
     }
 
-    public static void drawFillArc(GuiGraphics graphics, int cX, int cY, int radius, int start, int end, RGB rgb){
+    public static void drawFillArc(GuiGraphics graphics, int cX, int cY, int radius, int start, int end, RGB rgb) {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
+
+        // Начинаем построение треугольного вентиля (фан) для круга
         bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f m = graphics.pose().last().pose();
 
+        // Настройка цвета
         int r = rgb.r;
         int g = rgb.g;
         int b = rgb.b;
         int a = 255;
-        if (rgb instanceof RGBA rgba)
+        if (rgb instanceof RGBA rgba) {
             a = rgba.a;
-
-        for (int i = start - 90; i <= end - 90; i++) {
-            double angle = Math.toRadians(i);
-            float x = (float)(Math.cos(angle) * radius) + cX;
-            float y = (float)(Math.sin(angle) * radius) + cY;
-            bufferBuilder.vertex(m, x, y, 0).color(r,g,b,a).endVertex();
         }
 
+        // Вершина центра круга
+        bufferBuilder.vertex(m, cX, cY, 0).color(r, g, b, a).endVertex();
+
+        // Создание вершин по краю круга для указанного диапазона углов
+        for (int angle = start; angle <= end; angle++) {
+            double rad = Math.toRadians(angle);
+            float x = (float) (Math.cos(rad) * radius) + cX;
+            float y = (float) (Math.sin(rad) * radius) + cY;
+            bufferBuilder.vertex(m, x, y, 0).color(r, g, b, a).endVertex();
+        }
+
+        // Завершение построения
         tesselator.end();
     }
 
@@ -268,6 +320,32 @@ public class RenderHelper {
         guiGraphics.pose().translate((int) (x / scale), (int) (y / scale), 0f);
     }
 
+    public static void pushScale(GuiGraphics guiGraphics, int x, int y, int w, int h, int scale) {
+        guiGraphics.pose().pushPose();
+
+        float scaledWidth = w * scale;
+        float scaledHeight = h * scale;
+
+        float dx = (w - scaledWidth) / 2.0f;
+        float dy = (h - scaledHeight) / 2.0f;
+
+        guiGraphics.pose().translate(x + dx, y + dy, 0);
+        guiGraphics.pose().scale(scale, scale, 1.0F);
+    }
+
+    public static void pushScale(GuiGraphics guiGraphics, int x, int y, int w, int h, float scale) {
+        guiGraphics.pose().pushPose();
+
+        float scaledWidth = w * scale;
+        float scaledHeight = h * scale;
+
+        float dx = (w - scaledWidth) / 2.0f;
+        float dy = (h - scaledHeight) / 2.0f;
+
+        guiGraphics.pose().translate(x + dx, y + dy, 0);
+        guiGraphics.pose().scale(scale, scale, 1.0F);
+    }
+
     public static void popScale(GuiGraphics guiGraphics){
         guiGraphics.pose().popPose();
     }
@@ -299,8 +377,41 @@ public class RenderHelper {
     public static void pushRotate(GuiGraphics guiGraphics, int x, int y, int w, int h, float angle){
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(x + w / 2.0, y + h / 2.0, 0);
-        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(45));
+        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(angle));
         guiGraphics.pose().translate(-w / 2.0, -h / 2.0, 0);
+    }
+
+    public static void pushRotation(GuiGraphics guiGraphics, Vector2 pivot, float angle) {
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(pivot.x, pivot.y, 0);
+        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(angle));
+        guiGraphics.pose().translate(-pivot.x, -pivot.y, 0);
+    }
+
+    public static void pushTransform(GuiGraphics guiGraphics, Vector2 pos, Vector2 size, float scale, float rotationAngle) {
+        Vector2 center = new Vector2(pos.x + size.x / 2, pos.y + size.y / 2);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(center.x, center.y, 0);
+        guiGraphics.pose().scale(scale, scale, 1.0F);
+        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(rotationAngle));
+        guiGraphics.pose().translate(-center.x, -center.y, 0);
+    }
+
+    public static void pushTransform(GuiGraphics guiGraphics, Vector2 pos, Vector2 size, Vector2 screenSize, float scale, float rotationAngle) {
+        Vector2 screenCenter = new Vector2(screenSize.x, screenSize.y);
+        Vector2 center = new Vector2(pos.x + size.x / 2, pos.y + size.y / 2);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(screenCenter.x, screenCenter.y, 0);
+        guiGraphics.pose().translate(center.x, center.y, 0);
+        guiGraphics.pose().scale(scale, scale, 1.0F);
+        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(rotationAngle));
+        guiGraphics.pose().translate(-center.x, -center.y, 0);
+        guiGraphics.pose().translate(-screenCenter.x, -screenCenter.y, 0);
+
+    }
+
+    public static void popTransform(GuiGraphics guiGraphics){
+        guiGraphics.pose().popPose();
     }
 
     public static void popRotate(GuiGraphics guiGraphics){
@@ -319,4 +430,67 @@ public class RenderHelper {
     public static void popTransparent(){
         RenderSystem.disableBlend();
     }
+
+    public static List<String> splitTextToLines(String text, float textScale, int maxWidth) {
+        if (text.isEmpty()) return Collections.emptyList();
+        if (!text.contains(" ") && !text.contains("\n")) return Collections.singletonList(text);
+
+        List<String> lines = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+
+        int index = 0;
+        int wordStartIndex = 0;
+        boolean wordProcessing = false;
+        char prevSymbol = '0';
+
+        for (char symbol : text.toCharArray()) {
+            if (symbol != ' ') {
+                wordProcessing = true;
+                if (prevSymbol == ' ') {
+                    wordStartIndex = index;
+                }
+            }
+
+            if (symbol == '\n') {
+                lines.add(builder.toString());
+                builder.delete(0, builder.length());
+                index = 0;
+                continue;
+            }
+
+            if (getTextWidth(builder.toString() + symbol, textScale) <= maxWidth) {
+                builder.append(symbol);
+            } else {
+                if (symbol == '.' || symbol == ',' || symbol == '!' || symbol == '?') {
+                    builder.append(symbol);
+                }
+                if (wordProcessing) {
+                    lines.add(builder.toString().substring(0, wordStartIndex));
+                    builder.delete(0, wordStartIndex);
+                } else {
+                    lines.add(builder.toString());
+                    builder.delete(0, builder.length());
+                }
+                if (symbol != ' ') {
+                    builder.append(symbol);
+                }
+                index = builder.length() - 1;
+            }
+
+            wordProcessing = false;
+            prevSymbol = symbol;
+            index++;
+        }
+
+        if (builder.length() != 0) {
+            lines.add(builder.toString());
+        }
+        return lines;
+    }
+
+    public static float getTextWidth(String text, float textScale) {
+        return Minecraft.getInstance().font.width(text) * textScale;
+    }
+
+
 }

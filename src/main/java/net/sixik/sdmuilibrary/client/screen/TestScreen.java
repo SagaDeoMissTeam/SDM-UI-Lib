@@ -5,6 +5,7 @@ import net.minecraft.network.chat.Component;
 import net.sixik.sdmuilibrary.client.utils.RenderHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.Colors;
+import net.sixik.sdmuilibrary.client.utils.misc.GradientRBG;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 import net.sixik.sdmuilibrary.client.widgets.buttons.SimpleButtonWidget;
 import net.sixik.sdmuilibrary.client.widgets.progressBar.BasicProgressBarWidget;
@@ -24,9 +25,9 @@ public class TestScreen extends BaseScreen {
 //            }
 //        });
 //
-        addRenderableWidget(basicTextFieldWidget = new BasicTextFieldWidget("Введите текст", 0,0, 100,20) {
-
-        });
+//        addRenderableWidget(basicTextFieldWidget = new BasicTextFieldWidget("Введите текст", 0,0, 100,20) {
+//
+//        });
 
 
 
@@ -35,6 +36,6 @@ public class TestScreen extends BaseScreen {
 
     @Override
     public void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        RGB.create(100,100,100).drawCircle(graphics, 50, 50, 120);
+        GradientRBG.create(RGB.fromHex("#b92b27"), RGB.fromHex("#1565C0")).drawCircle(graphics, mouseX, mouseY, 100);
     }
 }

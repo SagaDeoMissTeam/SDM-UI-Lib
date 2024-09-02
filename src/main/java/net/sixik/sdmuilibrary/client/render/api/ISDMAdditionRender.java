@@ -14,4 +14,7 @@ public interface ISDMAdditionRender {
 
     @OnlyIn(Dist.CLIENT)
     void drawCircle(GuiGraphics graphics, int x, int y, int radius);
+
+    @OnlyIn(Dist.CLIENT)
+    void drawTriangle(GuiGraphics graphics, int x, int y, int w, int h);
 }

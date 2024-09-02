@@ -13,6 +13,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.sixik.sdmuilibrary.client.render.api.ISDMAdditionRender;
 import net.sixik.sdmuilibrary.client.render.api.ISDMRender;
 import net.sixik.sdmuilibrary.client.utils.RenderHelper;
+import org.joml.Matrix4f;
 
 
 /**
@@ -55,8 +56,15 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
      * @return A new RGB color instance.
      */
     public static RGB fromHex(String hex) {
-        int color = Integer.parseInt(hex.substring(1), 16);
-        return new RGB((color >> 16) & 0xFF, (color >> 8) & 0xFF, color & 0xFF);
+        // Убираем символ #, если он присутствует
+        hex = hex.replace("#", "");
+
+        // Парсим цвет и возвращаем массив с RGB значениями
+        int r = Integer.parseInt(hex.substring(0, 2), 16);
+        int g = Integer.parseInt(hex.substring(2, 4), 16);
+        int b = Integer.parseInt(hex.substring(4, 6), 16);
+
+        return new RGB(r, g, b);
     }
 
     /**
@@ -150,8 +158,9 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderSystem.defaultBlendFunc();
         RenderHelper.drawLine(graphics, x, y, x2, y2, lineWidth, this);
+        RenderSystem.disableBlend();
     }
 
     /**
@@ -169,8 +178,9 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        RenderSystem.defaultBlendFunc();
         RenderHelper.drawFillArc(graphics, x, y, radius,start,end, this);
+        RenderSystem.disableBlend();
     }
 
     /**
@@ -182,11 +192,57 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
      * @param radius The radius of the circle.
      */
     @Override
+    @Deprecated
     public void drawCircle(GuiGraphics graphics, int x, int y, int radius) {
+        drawFillArc(graphics, x, y, radius, 0, 360, this);
+    }
+
+    @Deprecated
+    public static void drawFillArc(GuiGraphics graphics, int cX, int cY, int radius, int start, int end, RGB rgb) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        RenderHelper.drawFillCircle(graphics, x, y, radius, this);
+        RenderSystem.defaultBlendFunc();
+
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tesselator.getBuilder();
+
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        Matrix4f matrix = graphics.pose().last().pose();
+
+        int r = rgb.r;
+        int g = rgb.g;
+        int b = rgb.b;
+        int a = 255;
+        if (rgb instanceof RGBA rgba) {
+            a = rgba.a;
+        }
+
+        bufferBuilder.vertex(matrix, cX, cY, 0).color(r, g, b, a).endVertex();
+
+        for (int angle = start; angle <= end; angle++) {
+            double rad = Math.toRadians(angle);
+            float x = (float) (Math.cos(rad) * radius) + cX;
+            float y = (float) (Math.sin(rad) * radius) + cY;
+            bufferBuilder.vertex(matrix, x, y, 0).color(r, g, b, a).endVertex();
+        }
+
+        tesselator.end();
+        RenderSystem.disableBlend();
+    }
+
+    @Override
+    public void drawTriangle(GuiGraphics graphics, int x, int y, int w, int h) {
+         if (w > 0 && h > 0) {
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            Tesselator tesselator = Tesselator.getInstance();
+            BufferBuilder buffer = tesselator.getBuilder();
+            RenderHelper.addFillTriangleToBuffer(graphics,buffer,x,y,w,h,this);
+            tesselator.end();
+            RenderSystem.disableBlend();
+        }
     }
 }

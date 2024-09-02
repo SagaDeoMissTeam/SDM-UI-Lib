@@ -14,6 +14,14 @@ public class GLHelper {
         RenderHelper.pushScale(graphics, position.x, position.y, scale);
     }
 
+    public static void pushScale(GuiGraphics graphics, int scale, Vector2 position, Vector2 size) {
+        RenderHelper.pushScale(graphics, position.x, position.y, size.x, size.y, scale);
+    }
+
+    public static void pushScale(GuiGraphics graphics, float scale, Vector2 position, Vector2 size) {
+        RenderHelper.pushScale(graphics, position.x, position.y, size.x, size.y, scale);
+    }
+
     public static void popScale(GuiGraphics graphics) {
         RenderHelper.popScale(graphics);
     }
@@ -30,6 +38,18 @@ public class GLHelper {
         RenderHelper.popUpper(graphics);
     }
 
+    public static void pushRotation(GuiGraphics graphics, Vector2 pivot, int angle) {
+        RenderHelper.pushRotation(graphics, pivot, angle);
+    }
+
+    public static void pushRotation(GuiGraphics graphics, Vector2 pivot, float angle) {
+        RenderHelper.pushRotation(graphics, pivot, angle);
+    }
+
+    public static void pushRotation(GuiGraphics graphics, Vector2 position, Vector2 size, int angle) {
+        RenderHelper.pushRotate(graphics, position.x, position.y, size.x, size.y, angle);
+    }
+
     public static void pushRotation(GuiGraphics graphics, Vector2 position, Vector2 size, float angle) {
         RenderHelper.pushRotate(graphics, position.x, position.y, size.x, size.y, angle);
     }
@@ -44,6 +64,18 @@ public class GLHelper {
 
     public static void popTransparent(){
         RenderHelper.popTransparent();
+    }
+
+    public static void pushTransform(GuiGraphics guiGraphics, Vector2 pos, Vector2 size, float scale, float rotationAngle) {
+        RenderHelper.pushTransform(guiGraphics, pos, size, scale, rotationAngle);
+    }
+
+    public static void pushTransform(GuiGraphics guiGraphics, Vector2 pos, Vector2 size, Vector2 screenSize, float scale, float rotationAngle) {
+        RenderHelper.pushTransform(guiGraphics, pos, size, screenSize, scale, rotationAngle);
+    }
+
+    public static void popTransform(GuiGraphics guiGraphics) {
+        RenderHelper.popTransform(guiGraphics);
     }
 
     /**

@@ -73,4 +73,22 @@ public class GradientRBG extends RGB{
             tesselator.end();
         }
     }
+
+    @Override
+    public void drawTriangle(GuiGraphics graphics, int x, int y, int w, int h) {
+        if(w > 0 && h > 0) {
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+
+            Tesselator tesselator = Tesselator.getInstance();
+            BufferBuilder buffer = tesselator.getBuilder();
+
+            RenderHelper.addFillTriangleToBufferGradient(graphics,buffer,x,y,w,h,start, end);
+            tesselator.end();
+
+            RenderSystem.disableBlend();
+        }
+    }
 }
