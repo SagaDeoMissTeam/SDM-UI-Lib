@@ -27,13 +27,6 @@ public class SDMUILibrary {
 
     }
 
-    @SubscribeEvent
-    public void onClick(PlayerInteractEvent.RightClickEmpty event){
-        if(event.getEntity().level().isClientSide){
-            Minecraft.getInstance().setScreen(new TestScreen());
-        }
-    }
-
     @Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
 

@@ -201,6 +201,26 @@ tasks.named('jar', Jar).configure {
     finalizedBy 'reobfJar'
 }
 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier.set('sources')
+}
+
+// Добавляем JAR с исходниками в артефакты
+artifacts {
+    archives sourcesJar
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
+
+//
+//task javadocJar(type: Jar) {
+//    from javadoc
+//    archiveClassifier.set('javadoc')
+//}
+//
+//artifacts {
+//    archives javadocJar
+//}

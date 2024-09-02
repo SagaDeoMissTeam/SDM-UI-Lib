@@ -18,9 +18,18 @@ import org.joml.*;
 
 import java.lang.Math;
 
+
+/**
+ * A utility class for rendering graphics in Minecraft.
+ */
 public class RenderHelper {
 
 
+    /**
+     * Prepares the rendering environment for a texture.
+     *
+     * @param textureLocation The location of the texture to be rendered.
+     */
     public static void prepareTextureRendering(ResourceLocation textureLocation) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, textureLocation);
@@ -30,19 +39,49 @@ public class RenderHelper {
         RenderSystem.enableDepthTest();
     }
 
-    public static void drawText(GuiGraphics poseStack, int x, int y, float size, Component text, int textColor){
-        drawText(poseStack, Minecraft.getInstance().font,x,y,size,text,textColor);
+    /**
+     * Draws text on the screen using the specified font and color.
+     *
+     * @param poseStack      The pose stack for rendering.
+     * @param x              The x-coordinate of the text's position.
+     * @param y              The y-coordinate of the text's position.
+     * @param size           The size of the text.
+     * @param text           The text to be rendered.
+     * @param textColor      The color of the text.
+     */
+    public static void drawText(GuiGraphics poseStack, int x, int y, float size, Component text, int textColor) {
+        drawText(poseStack, Minecraft.getInstance().font, x, y, size, text, textColor);
     }
-    public static void drawText(GuiGraphics poseStack, Font font, int x, int y, float size, Component text, int textColor){
+
+    /**
+     * Draws text on the screen using the specified font and color.
+     *
+     * @param poseStack      The pose stack for rendering.
+     * @param font           The font to be used for rendering the text.
+     * @param x              The x-coordinate of the text's position.
+     * @param y              The y-coordinate of the text's position.
+     * @param size           The size of the text.
+     * @param text           The text to be rendered.
+     * @param textColor      The color of the text.
+     */
+    public static void drawText(GuiGraphics poseStack, Font font, int x, int y, float size, Component text, int textColor) {
         poseStack.pose().pushPose();
         poseStack.pose().scale(size, size, 1.0f);
         poseStack.pose().translate(x, y, 0);
-        poseStack.drawString(font,text, (int) x, (int) y, textColor);
+        poseStack.drawString(font, text, (int) x, (int) y, textColor);
         poseStack.pose().popPose();
     }
 
-    public static void drawText(GuiGraphics graphics, Component text, int x, int y){
-        graphics.drawString(Minecraft.getInstance().font, text.getString(), x,y, RGB.create(255,255,255).toInt());
+    /**
+     * Draws text on the screen using the default font and color.
+     *
+     * @param graphics       The graphics context for rendering.
+     * @param text           The text to be rendered.
+     * @param x              The x-coordinate of the text's position.
+     * @param y              The y-coordinate of the text's position.
+     */
+    public static void drawText(GuiGraphics graphics, Component text, int x, int y) {
+        graphics.drawString(Minecraft.getInstance().font, text.getString(), x, y, RGB.create(255, 255, 255).toInt());
     }
 
 
@@ -158,6 +197,19 @@ public class RenderHelper {
         drawFillArc(graphics, x, y, radius, 0, 360, rgb);
     }
 
+    /**
+     * Draws a hollow rectangle (also known as a frame) on the screen using the specified parameters.
+     *
+     * @param graphics The graphics context for rendering.
+     * @param x        The x-coordinate of the top-left corner of the rectangle.
+     * @param y        The y-coordinate of the top-left corner of the rectangle.
+     * @param w        The width of the rectangle.
+     * @param h        The height of the rectangle.
+     * @param col      The color of the rectangle.
+     * @param roundEdges A boolean indicating whether the corners of the rectangle should be rounded.
+     *
+     * @return void
+     */
     public static void drawHollowRect(GuiGraphics graphics, int x, int y, int w, int h, RGB col, boolean roundEdges) {
         if (w > 1 && h > 1 && col != null) {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
@@ -204,11 +256,6 @@ public class RenderHelper {
         guiGraphics.blit(texture, x,y,width,height, textureX, textureY, textureW, textureH, textureSizeX, textureSizeY );
     }
 
-    /**
-     * Позволяет изменить маштаб рендера когда ты закончил весь рендер с изменённым размером то вызови {@link RenderHelper#popScale}
-     * @param x,y Координаты чтобы можно было коректно сместить рендер
-     * @param scale Маштаб
-     */
     public static void pushScale(GuiGraphics guiGraphics, int x, int y, int scale){
         guiGraphics.pose().pushPose();
         guiGraphics.pose().scale(scale, scale, 1f);

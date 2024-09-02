@@ -10,21 +10,55 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.sixik.sdmuilibrary.client.utils.RenderHelper;
 
+/**
+ * A class representing a gradient color that extends the RGB color class.
+ * It provides a method to draw a gradient rectangle using the provided start and end colors.
+ */
 public class GradientRBG extends RGB{
 
+    /**
+     * The start color of the gradient.
+     */
     public RGB start;
+
+    /**
+     * The end color of the gradient.
+     */
     public RGB end;
 
+    /**
+     * Constructor for the GradientRBG class.
+     *
+     * @param start The start color of the gradient.
+     * @param end The end color of the gradient.
+     */
     protected GradientRBG(RGB start, RGB end) {
         super(start.r, start.g, start.b);
         this.start = start;
         this.end = end;
     }
 
+    /**
+     * Static factory method to create a new GradientRBG instance.
+     *
+     * @param start The start color of the gradient.
+     * @param end The end color of the gradient.
+     * @return A new GradientRBG instance.
+     */
     public static GradientRBG create(RGB start, RGB end){
         return new GradientRBG(start, end);
     }
 
+    /**
+     * Draws a gradient rectangle using the provided start and end colors.
+     *
+     * @param graphics The GuiGraphics object used for drawing.
+     * @param x The x-coordinate of the top-left corner of the rectangle.
+     * @param y The y-coordinate of the top-left corner of the rectangle.
+     * @param width The width of the rectangle.
+     * @param height The height of the rectangle.
+     * @param tick The current game tick.
+     */
     @Override
     public void draw(GuiGraphics graphics, int x, int y, int width, int height, float tick) {
         if(width > 0 && height > 0){

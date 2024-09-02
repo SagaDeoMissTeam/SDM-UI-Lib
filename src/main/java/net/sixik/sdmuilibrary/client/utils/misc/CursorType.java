@@ -6,6 +6,10 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
+/**
+ * Enum representing different cursor types for the Minecraft client.
+ * This enum is used to set the cursor shape in the game window.
+ */
 public enum CursorType {
     ARROW(221185),
     IBEAM(221186),
@@ -17,10 +21,22 @@ public enum CursorType {
     private final int shape;
     private long cursor = 0L;
 
+    /**
+     * Constructor for CursorType enum.
+     *
+     * @param c The shape code for the cursor.
+     */
     private CursorType(int c) {
         this.shape = c;
     }
 
+    /**
+     * Sets the cursor shape in the Minecraft client window.
+     *
+     * @param type The CursorType enum value representing the desired cursor shape.
+     *             If null, the cursor will be reset to the default arrow shape.
+     * @OnlyIn(Dist.CLIENT)
+     */
     @OnlyIn(Dist.CLIENT)
     public static void set(@Nullable CursorType type) {
         long window = Minecraft.getInstance().getWindow().getWindow();

@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.sixik.sdm_ui_library.mixin",
+  "package": "net.sixik.sdmuilibrary.mixin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "sdm_ui_library.refmap.json",
   "mixins": [

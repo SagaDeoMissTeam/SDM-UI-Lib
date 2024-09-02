@@ -46,6 +46,16 @@ public class GLHelper {
         RenderHelper.popTransparent();
     }
 
+    /**
+     * Calculates the center position of a rectangle based on the given parameters.
+     *
+     * @param position The top-left corner position of the rectangle.
+     * @param size     The dimensions of the rectangle.
+     * @param centerType The type of center to calculate (X, Y, or both).
+     * @param method   The method to calculate the center (absolute or relative).
+     * @return The calculated center position of the rectangle.
+     */
+    @Deprecated
     public static Vector2 getCenter(Vector2 position, Vector2 size, CenterOperators.Type centerType, CenterOperators.Method method){
         switch (centerType) {
             case CENTER_X -> {
@@ -63,6 +73,33 @@ public class GLHelper {
         }
     }
 
+    /**
+     * Calculates the center position of a rectangle based on the given parameters.
+     *
+     * @param pos The position of the rectangle.
+     * @param size The dimensions of the rectangle.
+     * @param centerType The type of center to calculate (X, Y, or both).
+     * @param method The method to calculate the center (absolute or relative).
+     * @return The calculated center position of the rectangle.
+     *
+     * The function calculates the center position of a rectangle based on the provided parameters.
+     * It supports calculating the center for X, Y, or both axes, and it can use absolute or relative
+     * positioning methods. The calculation is based on the given position, size, center type, and method.
+     *
+     * If the center type is CENTER_X, the function calculates the center position along the X-axis.
+     * If the method is absolute, the center is calculated as (pos.x + size.x / 3, pos.y).
+     * If the method is relative, the center is calculated as (pos.x + size.x / 2, pos.y).
+     *
+     * If the center type is CENTER_Y, the function calculates the center position along the Y-axis.
+     * If the method is absolute, the center is calculated as (pos.x, pos.y + size.y / 3).
+     * If the method is relative, the center is calculated as (pos.x, pos.y + size.y / 2).
+     *
+     * If the center type is CENTER_XY, the function calculates the center position for both axes.
+     * If the method is absolute, the center is calculated as (pos.x + size.x / 3, pos.y + size.y / 3).
+     * If the method is relative, the center is calculated as (pos.x + size.x / 2, pos.y + size.y / 2).
+     *
+     * If the center type is not recognized, the function returns the original position (pos.x, pos.y).
+     */
     public static Vector2 getCenterWithPos(Vector2 pos, Vector2 size, CenterOperators.Type centerType, CenterOperators.Method method){
         switch (centerType) {
             case CENTER_X -> {
