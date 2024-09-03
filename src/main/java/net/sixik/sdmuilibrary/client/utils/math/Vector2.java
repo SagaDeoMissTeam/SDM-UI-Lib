@@ -66,4 +66,7 @@ public class Vector2 {
         return new Vector2(x, y);
     }
 
+    public Vector2f toVector2f() {
+        return Vector2f.of(x, y);
+    }
 }

@@ -13,7 +13,9 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.sixik.sdmuilibrary.client.render.api.ISDMAdditionRender;
 import net.sixik.sdmuilibrary.client.render.api.ISDMRender;
 import net.sixik.sdmuilibrary.client.utils.RenderHelper;
+import net.sixik.sdmuilibrary.client.utils.ShapesRender;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
+import net.sixik.sdmuilibrary.client.utils.math.Vector2f;
 import net.sixik.sdmuilibrary.client.widgetsFake.RGBFakeWidget;
 import org.joml.Matrix4f;
 
@@ -174,26 +176,6 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
     }
 
     /**
-     * Renders a filled arc with the current RGB color.
-     *
-     * @param graphics The GUI graphics context.
-     * @param x The x-coordinate of the center of the arc.
-     * @param y The y-coordinate of the center of the arc.
-     * @param radius The radius of the arc.
-     * @param start The start angle of the arc in degrees.
-     * @param end The end angle of the arc in degrees.
-     */
-    @Override
-    public void drawArc(GuiGraphics graphics, int x, int y, int radius, int start, int end) {
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderHelper.drawFillArc(graphics, x, y, radius,start,end, this);
-        RenderSystem.disableBlend();
-    }
-
-    /**
      * Renders a filled circle with the current RGB color.
      *
      * @param graphics The GUI graphics context.
@@ -201,42 +183,18 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
      * @param y The y-coordinate of the center of the circle.
      * @param radius The radius of the circle.
      */
-    @Override
-    @Deprecated
-    public void drawCircle(GuiGraphics graphics, int x, int y, int radius) {
-        drawFillArc(graphics, x, y, radius, 0, 360, this);
-    }
 
-    @Deprecated
-    public static void drawFillArc(GuiGraphics graphics, int cX, int cY, int radius, int start, int end, RGB rgb) {
+    @Override
+    public void drawCircle(GuiGraphics graphics, int x, int y, int radius, int segments) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f matrix = graphics.pose().last().pose();
-
-        int r = rgb.r;
-        int g = rgb.g;
-        int b = rgb.b;
-        int a = 255;
-        if (rgb instanceof RGBA rgba) {
-            a = rgba.a;
-        }
-
-        bufferBuilder.vertex(matrix, cX, cY, 0).color(r, g, b, a).endVertex();
-
-        for (int angle = start; angle <= end; angle++) {
-            double rad = Math.toRadians(angle);
-            float x = (float) (Math.cos(rad) * radius) + cX;
-            float y = (float) (Math.sin(rad) * radius) + cY;
-            bufferBuilder.vertex(matrix, x, y, 0).color(r, g, b, a).endVertex();
-        }
-
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+        ShapesRender.drawCircle(matrix,bufferBuilder,new Vector2f(x,y),radius,segments, this);
         tesselator.end();
         RenderSystem.disableBlend();
     }

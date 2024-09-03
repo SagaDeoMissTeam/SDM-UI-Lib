@@ -13,6 +13,10 @@ public class Vector2f {
         return new Vector2f(x + other.x, y + other.y);
     }
 
+    public static Vector2f of(float x, float y) {
+        return new Vector2f(x, y);
+    }
+
     public Vector2f subtract(Vector2f other) {
         return new Vector2f(x - other.x, y - other.y);
     }
@@ -85,6 +89,14 @@ public class Vector2f {
         float dotProduct = a.dot(b);
         float lengthSquared = b.lengthSquared();
         return b.multiply(dotProduct / lengthSquared);
+    }
+
+    public float toRadius(){
+        return (float) Math.toRadians(toDegrees());
+    }
+
+    public float toDegrees(){
+        return (float) Math.toDegrees(Math.atan2(y, x));
     }
 
     public static Vector2f reject(Vector2f a, Vector2f b) {

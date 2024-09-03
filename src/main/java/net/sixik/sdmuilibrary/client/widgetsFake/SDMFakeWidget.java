@@ -40,6 +40,7 @@ public abstract class SDMFakeWidget implements ISDMRender {
 
     @Override
     public void draw(GuiGraphics graphics, int x, int y, int width, int height, float tick) {
-        draw(graphics);
+        if(visible)
+            draw(graphics);
     }
 }

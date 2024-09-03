@@ -13,6 +13,7 @@ import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.CenterOperators;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 import net.sixik.sdmuilibrary.client.utils.misc.RGBA;
+import net.sixik.sdmuilibrary.client.utils.math.Vector2f;
 import org.joml.*;
 
 import java.lang.Math;
@@ -127,6 +128,7 @@ public class RenderHelper {
         }
     }
 
+
     public static void addFillTriangleToBuffer(GuiGraphics graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB rgb){
         buffer.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         Matrix4f m = graphics.pose().last().pose();
@@ -182,11 +184,12 @@ public class RenderHelper {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.lineWidth(lineWidth);
 
-        bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
+        bufferBuilder.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
 
 
         bufferBuilder.vertex(m, x1, y1, 0).color(r, g, b, a).endVertex();
         bufferBuilder.vertex(m, x2, y2, 0).color(r, g, b, a).endVertex();
+
 
         tesselator.end();
 
@@ -497,9 +500,40 @@ public class RenderHelper {
         return lines;
     }
 
+    public static void enableScissor(PoseStack poseStack, double x, double y, double width, double height) {
+        var mat = poseStack.last().pose();
+        var origin = new Vector4f(0, 0, 0, 1);
+        origin.mulTranspose(mat);
+        var window = Minecraft.getInstance().getWindow();
+        var scale = window.getGuiScale();
+        RenderSystem.enableScissor(
+                (int) (origin.x() * scale),
+                window.getHeight() - ((int) ((origin.y() + height) * scale)),
+                (int) (width * scale),
+                (int) (height * scale)
+        );
+    }
+
+    public static void disableScissor() {
+        RenderSystem.disableScissor();
+    }
+
     public static float getTextWidth(String text, float textScale) {
         return Minecraft.getInstance().font.width(text) * textScale;
     }
 
+
+
+    @Deprecated
+    public static void testBuffer(GuiGraphics graphics, int cX, int cY, int w, int h, RGB rgb){
+
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        Matrix4f matrix = graphics.pose().last().pose();
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+        ShapesRender.drawCircle(matrix,bufferBuilder,new Vector2f(cX,cY),50,12, rgb);
+
+        tesselator.end();
+    }
 
 }

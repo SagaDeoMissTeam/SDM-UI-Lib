@@ -36,6 +36,6 @@ public class TestScreen extends BaseScreen {
 
     @Override
     public void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        GradientRBG.create(RGB.fromHex("#b92b27"), RGB.fromHex("#1565C0")).drawCircle(graphics, mouseX, mouseY, 100);
+        RGB.fromHex("#b92b27").drawLine(graphics, 0, 0, 100, 50, 5);
     }
 }
