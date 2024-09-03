@@ -34,6 +34,15 @@ public class BaseScreen extends Screen {
         draw(graphics, mouseX, mouseY, partialTicks);
     }
 
+    @Override
+    public void tick() {
+        for(Renderable renderable : this.renderables) {
+            if(renderable instanceof SDMWidget widget){
+                widget.tick();
+            }
+        }
+
+    }
 
     public void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks){
 

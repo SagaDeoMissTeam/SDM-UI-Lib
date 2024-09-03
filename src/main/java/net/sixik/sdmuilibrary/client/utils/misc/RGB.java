@@ -13,6 +13,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.sixik.sdmuilibrary.client.render.api.ISDMAdditionRender;
 import net.sixik.sdmuilibrary.client.render.api.ISDMRender;
 import net.sixik.sdmuilibrary.client.utils.RenderHelper;
+import net.sixik.sdmuilibrary.client.utils.math.Vector2;
+import net.sixik.sdmuilibrary.client.widgetsFake.RGBFakeWidget;
 import org.joml.Matrix4f;
 
 
@@ -65,6 +67,14 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
         int b = Integer.parseInt(hex.substring(4, 6), 16);
 
         return new RGB(r, g, b);
+    }
+
+    public RGBFakeWidget toFakeWidget(){
+        return new RGBFakeWidget(this);
+    }
+
+    public RGBFakeWidget toFakeWidget(Vector2 pos, Vector2 size){
+        return (RGBFakeWidget) new RGBFakeWidget(this).setPosition(pos).setSize(size);
     }
 
     /**

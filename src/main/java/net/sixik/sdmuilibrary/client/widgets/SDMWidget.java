@@ -4,15 +4,17 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
+import net.sixik.sdmuilibrary.client.render.api.ISDMRender;
 import net.sixik.sdmuilibrary.client.render.container.ContainerObject;
 import net.sixik.sdmuilibrary.client.render.container.RenderContainerImpl;
+import net.sixik.sdmuilibrary.client.utils.RenderHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.CursorType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
 
-public class SDMWidget extends AbstractWidget {
+public class SDMWidget extends AbstractWidget implements ISDMRender {
 
 
     public RenderContainerImpl container;
@@ -75,6 +77,10 @@ public class SDMWidget extends AbstractWidget {
 
     }
 
+    public void tick(){
+
+    }
+
     @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float tick) {
         if(isActive()) {
@@ -89,5 +95,10 @@ public class SDMWidget extends AbstractWidget {
     @Override
     protected void updateWidgetNarration(NarrationElementOutput p_259858_) {
 
+    }
+
+    @Override
+    public void draw(GuiGraphics graphics, int x, int y, int width, int height, float tick) {
+        draw(graphics, getX(), getY(), getWidth(), getHeight(), Float.floatToIntBits(RenderHelper.getMousePosition().x), Float.floatToIntBits(RenderHelper.getMousePosition().y), tick);
     }
 }

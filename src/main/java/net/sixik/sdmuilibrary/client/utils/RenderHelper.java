@@ -3,15 +3,12 @@ package net.sixik.sdmuilibrary.client.utils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
-import dev.ftb.mods.ftblibrary.icon.Color4I;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.CenterOperators;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
@@ -29,6 +26,14 @@ import java.util.List;
  */
 public class RenderHelper {
 
+    public static double getGuiScale(){
+        return Minecraft.getInstance().getWindow().getGuiScale();
+    }
+
+    public static boolean isGamePaused(){
+        return Minecraft.getInstance().isPaused();
+    }
+
     public static Vector2 getScreenSize(){
         return new Vector2(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getGuiScaledHeight());
     }
@@ -39,6 +44,10 @@ public class RenderHelper {
 
     public static Vector2 getScreenCenter(CenterOperators.Type centerType, CenterOperators.Method method){
         return GLHelper.getCenterWithPos(new Vector2(0,0), getScreenSize(), centerType, method);
+    }
+
+    public static Vector2f getMousePosition(){
+        return new Vector2f((float) Minecraft.getInstance().mouseHandler.xpos(), (float) Minecraft.getInstance().mouseHandler.ypos());
     }
 
     /**
