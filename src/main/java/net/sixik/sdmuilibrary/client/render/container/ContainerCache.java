@@ -6,6 +6,8 @@ import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@Deprecated
 public class ContainerCache {
 
     public Vector2 basePosition;

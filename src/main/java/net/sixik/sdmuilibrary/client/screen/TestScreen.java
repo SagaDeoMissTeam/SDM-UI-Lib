@@ -8,8 +8,13 @@ import net.sixik.sdmuilibrary.client.utils.misc.Colors;
 import net.sixik.sdmuilibrary.client.utils.misc.GradientRBG;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 import net.sixik.sdmuilibrary.client.widgets.buttons.SimpleButtonWidget;
+import net.sixik.sdmuilibrary.client.widgets.list.BaseDropDownListWidget;
 import net.sixik.sdmuilibrary.client.widgets.progressBar.BasicProgressBarWidget;
 import net.sixik.sdmuilibrary.client.widgets.text.fields.BasicTextFieldWidget;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class TestScreen extends BaseScreen {
 
@@ -29,6 +34,10 @@ public class TestScreen extends BaseScreen {
 //
 //        });
 
+        List<String> values = List.of("foemfopwef","Очень длинное сообщение пиздец", UUID.randomUUID().toString(),"t","f","y","e","y","i","oo","pp","[[","]]","vv","bb","nn","mm");
+
+        addRenderableWidget(new BaseDropDownListWidget(Vector2.of(100,100), 100, 5, values, "foemfopwef"));
+
 
 
 
@@ -36,6 +45,6 @@ public class TestScreen extends BaseScreen {
 
     @Override
     public void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        RGB.fromHex("#b92b27").drawLine(graphics, 0, 0, 100, 50, 5);
+
     }
 }

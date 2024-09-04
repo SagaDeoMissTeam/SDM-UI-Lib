@@ -1,5 +1,5 @@
 package net.sixik.sdmuilibrary.client.render.container;
-
+@Deprecated
 public class ContainerObject<T> {
     public String name;
     public T object;

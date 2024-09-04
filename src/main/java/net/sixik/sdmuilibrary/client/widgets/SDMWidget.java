@@ -16,6 +16,7 @@ import java.util.HashSet;
 
 public class SDMWidget extends AbstractWidget implements ISDMRender {
 
+    public boolean drawMouseOver = false;
 
     public RenderContainerImpl container;
     public final HashSet<ContainerObject<?>> properties = new HashSet<>();
@@ -56,7 +57,12 @@ public class SDMWidget extends AbstractWidget implements ISDMRender {
     }
 
     public boolean isMouseOver(int mouseX, int mouseY) {
-        return mouseX >= getX() && mouseX <= getX() + width && mouseY >= getY() && mouseY <= getY() + height;
+        return active && visible && mouseX >= getX() && mouseX < getX() + width && mouseY >= getY() && mouseY < getY() + height;
+    }
+
+    @Override
+    public boolean isMouseOver(double p_93672_, double p_93673_) {
+        return isMouseOver((int) p_93672_, (int) p_93673_);
     }
 
     public void drawMouseOver(GuiGraphics graphics, int x, int y, int width, int height, float tick){
@@ -84,7 +90,8 @@ public class SDMWidget extends AbstractWidget implements ISDMRender {
     @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float tick) {
         if(isActive()) {
-            drawMouseOver(graphics, mouseX,mouseY, width, height, tick);
+            if(drawMouseOver)
+                drawMouseOver(graphics, mouseX,mouseY, width, height, tick);
             draw(graphics, getX(), getY(), getWidth(), getHeight(), mouseX, mouseY, tick);
         } else if(!active) {
             drawNoActive(graphics, getX(), getY(), getWidth(), getHeight(), mouseX, mouseY, tick);

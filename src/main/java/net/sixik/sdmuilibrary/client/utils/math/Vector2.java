@@ -66,7 +66,15 @@ public class Vector2 {
         return new Vector2(x, y);
     }
 
-    public Vector2f toVector2f() {
-        return Vector2f.of(x, y);
+    public Vector2 toVector2(){
+        return new Vector2((int) x, (int) y);
+    }
+
+    public Vector2f toVector2f(){
+        return new Vector2f((float) x, (float) y);
+    }
+
+    public Vector2d toVector2d(){
+        return new Vector2d((double) x, (double) y);
     }
 }

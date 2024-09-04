@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 @Mod(SDMUILibrary.MODID)
 public class SDMUILibrary {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static final String MODID = "sdm_ui_library";
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -25,6 +25,8 @@ public class SDMUILibrary {
     public SDMUILibrary() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         MinecraftForge.EVENT_BUS.register(this);
+
+
     }
 
     @SubscribeEvent

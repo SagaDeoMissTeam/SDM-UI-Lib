@@ -1,5 +1,7 @@
 package net.sixik.sdmuilibrary.client.utils;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
@@ -7,14 +9,30 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.CenterOperators;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 import net.sixik.sdmuilibrary.client.utils.misc.RGBA;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2f;
+import org.jetbrains.annotations.Nullable;
 import org.joml.*;
+import net.sixik.sdmuilibrary.client.utils.math.Vector2d;
 
 import java.lang.Math;
 import java.util.ArrayList;
@@ -49,6 +67,26 @@ public class RenderHelper {
 
     public static Vector2f getMousePosition(){
         return new Vector2f((float) Minecraft.getInstance().mouseHandler.xpos(), (float) Minecraft.getInstance().mouseHandler.ypos());
+    }
+
+    public static int getTextHeight(){
+        return Minecraft.getInstance().font.lineHeight;
+    }
+
+    public static float getTextHeight(float scale){
+        return getTextHeight() * scale;
+    }
+
+    public static int getTextWidth(String text){
+        return Minecraft.getInstance().font.width(text);
+    }
+
+    public static float getTextWidth(String text, float scale){
+        return Minecraft.getInstance().font.width(text) * scale;
+    }
+
+    public static boolean isMouseOver(Vector2d mousePos, Vector2 pos, Vector2 size) {
+        return mousePos.x >= pos.x && mousePos.y >= pos.y && mousePos.x < pos.x + size.x && mousePos.y < pos.y + size.y;
     }
 
     /**
@@ -108,6 +146,18 @@ public class RenderHelper {
      */
     public static void drawText(GuiGraphics graphics, Component text, int x, int y) {
         graphics.drawString(Minecraft.getInstance().font, text.getString(), x, y, RGB.create(255, 255, 255).toInt());
+    }
+
+    public static void drawText(GuiGraphics graphics, String text, int x, int y) {
+        graphics.drawString(Minecraft.getInstance().font, text, x, y, RGB.create(255, 255, 255).toInt());
+    }
+
+    public static void drawText(GuiGraphics graphics, Component text, int x, int y, RGB rgb) {
+        graphics.drawString(Minecraft.getInstance().font, text.getString(), x, y, rgb.toInt());
+    }
+
+    public static void drawText(GuiGraphics graphics, String text, int x, int y, RGB rgb) {
+        graphics.drawString(Minecraft.getInstance().font, text, x, y, rgb.toInt());
     }
 
 
@@ -518,11 +568,6 @@ public class RenderHelper {
         RenderSystem.disableScissor();
     }
 
-    public static float getTextWidth(String text, float textScale) {
-        return Minecraft.getInstance().font.width(text) * textScale;
-    }
-
-
 
     @Deprecated
     public static void testBuffer(GuiGraphics graphics, int cX, int cY, int w, int h, RGB rgb){
@@ -536,4 +581,151 @@ public class RenderHelper {
         tesselator.end();
     }
 
+
+    @Nullable
+    public static LivingEntity getEntity(EntityType<?> type){
+        Minecraft mc  = Minecraft.getInstance();
+        if(mc.level != null){
+            Entity entity = type.create(mc.level);
+            return entity != null ? (LivingEntity) entity : null;
+        }
+        return null;
+    }
+
+    @Deprecated
+    public static void drawBlock(GuiGraphics graphics, Block block, int x, int y, int scale){
+        // Получаем текущий Minecraft instance и ItemRenderer
+        Minecraft mc = Minecraft.getInstance();
+        ItemStack blockStack = new ItemStack(block);
+
+        // Сохраняем текущее состояние
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(770, 771, 1, 0);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+        // Настройка матрицы для рендеринга блока
+        graphics.pose().pushPose();
+        graphics.pose().translate(x, y, 100); // Позиция на экране
+        graphics.pose().scale(scale, scale, scale); // Масштабирование блока
+
+
+//        graphics.pose().mulPoseMatrix(new Matrix4f(16.0F, 16.0F, 16.0F)); // Корректируем масштабирование для правильного отображения
+
+
+
+        // Восстанавливаем состояние
+        graphics.pose().popPose();
+        RenderSystem.disableBlend();
+    }
+
+    public static void drawLivingEntity(GuiGraphics guiGraphics, int x, int y, double scale, double yaw, double pitch, LivingEntity livingEntity) {
+        if (livingEntity.level() == null) return;
+        PoseStack poseStack = guiGraphics.pose();
+        poseStack.pushPose();
+        poseStack.translate((float) x, (float) y, 50f);
+        poseStack.scale((float) scale, (float) scale, (float) scale);
+        poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+        // Rotate entity
+        poseStack.mulPose(Axis.XP.rotationDegrees(((float) Math.atan((-40 / 40.0F))) * 10.0F));
+
+        livingEntity.yBodyRot = (float) -(yaw / 40.F) * 20.0F;
+        livingEntity.setYRot((float) -(yaw / 40.F) * 20.0F);
+        livingEntity.yHeadRot = livingEntity.getYRot();
+        livingEntity.yHeadRotO = livingEntity.getYRot();
+
+
+        poseStack.translate(0.0F, livingEntity.getMyRidingOffset(), 0.0F);
+        EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        entityRenderDispatcher.overrideCameraOrientation(new Quaternionf(0.0F, 0.0F, 0.0F, 1.0F));
+        entityRenderDispatcher.setRenderShadow(false);
+        final MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+        RenderSystem.runAsFancy(() -> {
+            entityRenderDispatcher.render(livingEntity, 0.0D, 0.0D, 0.0D, 0.0F, 1.0F, poseStack, bufferSource, 15728880);
+        });
+        bufferSource.endBatch();
+        entityRenderDispatcher.setRenderShadow(true);
+        poseStack.popPose();
+    }
+
+    public static void drawItem(GuiGraphics graphics, ItemStack stack, int hash, boolean renderOverlay, @Nullable String text) {
+        if (!stack.isEmpty()) {
+            Minecraft mc = Minecraft.getInstance();
+            ItemRenderer itemRenderer = mc.getItemRenderer();
+            BakedModel bakedModel = itemRenderer.getModel(stack, (Level)null, mc.player, hash);
+            Minecraft.getInstance().getTextureManager().getTexture(InventoryMenu.BLOCK_ATLAS).setFilter(false, false);
+            RenderSystem.setShaderTexture(0, InventoryMenu.BLOCK_ATLAS);
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            PoseStack modelViewStack = RenderSystem.getModelViewStack();
+            modelViewStack.pushPose();
+            modelViewStack.mulPoseMatrix(graphics.pose().last().pose());
+            modelViewStack.scale(1.0F, -1.0F, 1.0F);
+            modelViewStack.scale(16.0F, 16.0F, 16.0F);
+            RenderSystem.applyModelViewMatrix();
+            MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+            boolean flatLight = !bakedModel.usesBlockLight();
+            if (flatLight) {
+                Lighting.setupForFlatItems();
+            }
+
+            itemRenderer.render(stack, ItemDisplayContext.GUI, false, new PoseStack(), bufferSource, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
+            bufferSource.endBatch();
+            RenderSystem.enableDepthTest();
+            if (flatLight) {
+                Lighting.setupFor3DItems();
+            }
+
+            modelViewStack.popPose();
+            RenderSystem.applyModelViewMatrix();
+            if (renderOverlay) {
+                Tesselator t = Tesselator.getInstance();
+                Font font = mc.font;
+                if (stack.getCount() != 1 || text != null) {
+                    String s = text == null ? String.valueOf(stack.getCount()) : text;
+                    graphics.pose().pushPose();
+                    graphics.pose().translate(9.0 - (double)font.width(s), 1.0, 20.0);
+                    font.drawInBatch(s, 0.0F, 0.0F, 16777215, true, graphics.pose().last().pose(), bufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
+                    bufferSource.endBatch();
+                    graphics.pose().popPose();
+                }
+
+                if (stack.isBarVisible()) {
+                    RenderSystem.disableDepthTest();
+                    RenderSystem.disableBlend();
+                    int barWidth = stack.getBarWidth();
+                    int barColor = stack.getBarColor();
+                    draw(graphics, t, -6, 5, 13, 2, 0, 0, 0, 255);
+                    draw(graphics, t, -6, 5, barWidth, 1, barColor >> 16 & 255, barColor >> 8 & 255, barColor & 255, 255);
+                    RenderSystem.enableBlend();
+                    RenderSystem.enableDepthTest();
+                }
+
+                float cooldown = mc.player == null ? 0.0F : mc.player.getCooldowns().getCooldownPercent(stack.getItem(), mc.getFrameTime());
+                if (cooldown > 0.0F) {
+                    RenderSystem.disableDepthTest();
+                    RenderSystem.enableBlend();
+                    RenderSystem.defaultBlendFunc();
+                    draw(graphics, t, -8, Mth.floor(16.0F * (1.0F - cooldown)) - 8, 16, Mth.ceil(16.0F * cooldown), 255, 255, 255, 127);
+                    RenderSystem.enableDepthTest();
+                }
+            }
+
+        }
+    }
+
+    private static void draw(GuiGraphics graphics, Tesselator t, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
+        if (width > 0 && height > 0) {
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            Matrix4f m = graphics.pose().last().pose();
+            BufferBuilder renderer = t.getBuilder();
+            renderer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            renderer.vertex(m, (float)x, (float)y, 0.0F).color(red, green, blue, alpha).endVertex();
+            renderer.vertex(m, (float)x, (float)(y + height), 0.0F).color(red, green, blue, alpha).endVertex();
+            renderer.vertex(m, (float)(x + width), (float)(y + height), 0.0F).color(red, green, blue, alpha).endVertex();
+            renderer.vertex(m, (float)(x + width), (float)y, 0.0F).color(red, green, blue, alpha).endVertex();
+            t.end();
+        }
+    }
 }

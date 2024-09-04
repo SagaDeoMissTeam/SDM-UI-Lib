@@ -16,15 +16,17 @@ public abstract class BasicButtonWidget extends SDMWidget {
     public Component title = Component.empty();
 
     public BasicButtonWidget() {
-        super(null,null);
+        this(null,null);
+
     }
 
     public BasicButtonWidget(Vector2 size) {
-        super(null,size);
+        this(null,size);
     }
 
     public BasicButtonWidget(Vector2 position, Vector2 size) {
         super(position, size);
+        drawMouseOver = true;
     }
 
     @Override

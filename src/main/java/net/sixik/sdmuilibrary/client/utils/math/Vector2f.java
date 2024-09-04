@@ -111,4 +111,16 @@ public class Vector2f {
         return a.x == b.x && a.y == b.y;
     }
 
+
+    public Vector2 toVector2(){
+        return new Vector2((int) x, (int) y);
+    }
+
+    public Vector2f toVector2f(){
+        return new Vector2f((float) x, (float) y);
+    }
+
+    public Vector2d toVector2d(){
+        return new Vector2d((double) x, (double) y);
+    }
 }
