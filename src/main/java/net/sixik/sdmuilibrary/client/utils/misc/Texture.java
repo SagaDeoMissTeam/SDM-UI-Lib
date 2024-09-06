@@ -1,16 +1,26 @@
 package net.sixik.sdmuilibrary.client.utils.misc;
 
+import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.sixik.sdmuilibrary.client.render.api.ISDMRender;
 import net.sixik.sdmuilibrary.client.utils.RenderHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
+import net.sixik.sdmuilibrary.client.utils.math.Vector2f;
+import net.sixik.sdmuilibrary.client.utils.renders.TextureRenderHelper;
 
 /**
  * Represents a texture object that can be rendered using the ISDMRender interface.
  * This class provides methods to create texture objects with different configurations.
  */
 public class Texture implements ISDMRender {
+
+    public ImageType imageType = ImageType.NORMAL;
+    public int sliceSize = 10;
 
     /**
      * The resource location of the texture.
@@ -60,6 +70,12 @@ public class Texture implements ISDMRender {
         this.textureSize = textureSize;
     }
 
+    public Texture setImageType(ImageType imageType, int sliceSize) {
+        this.imageType = imageType;
+        this.sliceSize = sliceSize;
+        return this;
+    }
+
     /**
      * Static method to create a texture object with a specific size.
      *
@@ -85,6 +101,14 @@ public class Texture implements ISDMRender {
         return new Texture(texture, uv, textureSize);
     }
 
+    public static Texture createAutoTextureSize(ResourceLocation texture, Vector2 size, Vector2 uv){
+        return new Texture(texture, size, uv, TextureRenderHelper.getTextureSize(texture));
+    }
+
+    public static Texture createAutoTextureSize(ResourceLocation texture, Vector2 size){
+        return new Texture(texture, size, new Vector2(0,0), TextureRenderHelper.getTextureSize(texture));
+    }
+
     /**
      * Renders the texture using the provided graphics context.
      *
@@ -97,9 +121,29 @@ public class Texture implements ISDMRender {
      */
     @Override
     public void draw(GuiGraphics graphics, int x, int y, int width, int height, float tick) {
-        if(size == null)
-            RenderHelper.renderTexture(graphics, this.texture.toString(), x,y,width,height, uv.x, uv.y, textureSize.x, textureSize.y);
-        else
-            RenderHelper.renderTexture(graphics, this.texture.toString(), x,y,size.x,size.y, uv.x, uv.y, textureSize.x, textureSize.y);
+        render(graphics, x, y, width, height, tick);
+    }
+
+    protected void render(GuiGraphics graphics, int x, int y, int width, int height, float tick){
+        switch (imageType) {
+            case NORMAL -> {
+                if(size == null)
+                    RenderHelper.renderTexture(graphics, this.texture.toString(), x,y,width,height, uv.x, uv.y, textureSize.x, textureSize.y);
+                else
+                    RenderHelper.renderTexture(graphics, this.texture.toString(), x,y,size.x,size.y, uv.x, uv.y, textureSize.x, textureSize.y);
+            }
+            case SLICED -> {
+                if(size == null)
+                    TextureRenderHelper.renderSlicedTexture(graphics, this.texture, x,y,width,height, 10, textureSize.x, textureSize.y);
+                else
+                    TextureRenderHelper.renderSlicedTexture(graphics, this.texture, x,y,size.x,size.y, 10, textureSize.x, textureSize.y);
+            }
+        }
+    }
+
+
+    public enum ImageType {
+        SLICED,
+        NORMAL
     }
 }

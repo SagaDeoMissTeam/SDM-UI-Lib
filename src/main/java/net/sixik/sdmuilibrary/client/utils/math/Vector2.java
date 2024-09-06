@@ -77,4 +77,12 @@ public class Vector2 {
     public Vector2d toVector2d(){
         return new Vector2d((double) x, (double) y);
     }
+
+    @Override
+    public String toString() {
+        return "Vector2{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

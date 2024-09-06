@@ -119,4 +119,22 @@ public class RGBA extends RGB {
         a = alpha;
         return this;
     }
+
+    /**
+     * Interpolates between two RGBA colors based on the given interpolation factor.
+     *
+     * @param colorA The first RGBA color to interpolate from.
+     * @param colorC The second RGBA color to interpolate to.
+     * @param t The interpolation factor, ranging from 0.0 to 1.0. A value of 0.0 returns {@code colorA},
+     *          while a value of 1.0 returns {@code colorC}. Values in between interpolate between the two colors.
+     * @return A new RGBA color representing the interpolated result.
+     */
+    public static RGBA interpolate(RGBA colorA, RGBA colorC, float t) {
+        int r = (int) ((1 - t) * colorA.r + t * colorC.r);
+        int g = (int) ((1 - t) * colorA.g + t * colorC.g);
+        int b = (int) ((1 - t) * colorA.b + t * colorC.b);
+        int a = (int) ((1 - t) * colorA.a + t * colorC.a);
+
+        return new RGBA(r, g, b, a);
+    }
 }

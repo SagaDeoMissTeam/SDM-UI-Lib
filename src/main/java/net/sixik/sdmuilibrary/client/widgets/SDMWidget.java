@@ -66,7 +66,7 @@ public class SDMWidget extends AbstractWidget implements ISDMRender {
     }
 
     public void drawMouseOver(GuiGraphics graphics, int x, int y, int width, int height, float tick){
-        if(isMouseOver(container.mousePosition)){
+        if(isMouseOver(new Vector2(x,y))){
             CursorType.set(getCursor());
         } else CursorType.set(null);
     }
@@ -89,14 +89,11 @@ public class SDMWidget extends AbstractWidget implements ISDMRender {
 
     @Override
     protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float tick) {
-        if(isActive()) {
-            if(drawMouseOver)
-                drawMouseOver(graphics, mouseX,mouseY, width, height, tick);
+        if (isActive()) {
             draw(graphics, getX(), getY(), getWidth(), getHeight(), mouseX, mouseY, tick);
-        } else if(!active) {
+        } else if (!active) {
             drawNoActive(graphics, getX(), getY(), getWidth(), getHeight(), mouseX, mouseY, tick);
         }
-
     }
 
     @Override

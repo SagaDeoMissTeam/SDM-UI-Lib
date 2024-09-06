@@ -65,6 +65,11 @@ public class RenderHelper {
         return GLHelper.getCenterWithPos(new Vector2(0,0), getScreenSize(), centerType, method);
     }
 
+    public static Vector2 getScreenCenterWithSize(Vector2 size, CenterOperators.Type centerType, CenterOperators.Method method){
+        Vector2 p = GLHelper.getCenterWithPos(new Vector2(0,0), getScreenSize(), centerType, method);;
+        return p.add(new Vector2(size.x / 2, size.y / 2));
+    }
+
     public static Vector2f getMousePosition(){
         return new Vector2f((float) Minecraft.getInstance().mouseHandler.xpos(), (float) Minecraft.getInstance().mouseHandler.ypos());
     }
@@ -87,6 +92,30 @@ public class RenderHelper {
 
     public static boolean isMouseOver(Vector2d mousePos, Vector2 pos, Vector2 size) {
         return mousePos.x >= pos.x && mousePos.y >= pos.y && mousePos.x < pos.x + size.x && mousePos.y < pos.y + size.y;
+    }
+
+    public static Vector2 getMaxElementsOnSizeZone(Vector2 elementSize, Vector2 screenSize,  int step, CenterOperators.Type type){
+        switch (type) {
+            case CENTER_X -> {
+                return
+                        new Vector2(
+                                screenSize.x / (elementSize.x + step),
+                                0
+                        );
+            }
+            case CENTER_Y -> {
+                return new Vector2(
+                        0,
+                        screenSize.y / (elementSize.y + step)
+                );
+            }
+            default -> {
+                return new Vector2(
+                        screenSize.x / (elementSize.x + step),
+                        screenSize.y / (elementSize.y + step)
+                );
+            }
+        }
     }
 
     /**
@@ -219,11 +248,11 @@ public class RenderHelper {
         }
     }
 
-    public static void drawLine(GuiGraphics graphics, float x1, float y1, float x2, float y2, float lineWidth, RGB rgb) {
+    public static void drawLine(GuiGraphics graphics, RGB rgb) {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-
         Matrix4f m = graphics.pose().last().pose();
+
         int r = rgb.r;
         int g = rgb.g;
         int b = rgb.b;
@@ -232,43 +261,21 @@ public class RenderHelper {
             a = rgba.a;
 
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.lineWidth(lineWidth);
+        RenderSystem.setShaderColor(1f,1f,1f,1f);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+
+        RenderSystem.lineWidth(5f);
 
         bufferBuilder.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
 
-
-        bufferBuilder.vertex(m, x1, y1, 0).color(r, g, b, a).endVertex();
-        bufferBuilder.vertex(m, x2, y2, 0).color(r, g, b, a).endVertex();
-
-
-        tesselator.end();
+        bufferBuilder.vertex(m,20, 20, 0).color(r, g, b, a).endVertex();
+        bufferBuilder.vertex(m,10,10, 0).color(r, g, b, a).endVertex();
 
         RenderSystem.lineWidth(1f);
-    }
-
-    public static void drawArc(GuiGraphics graphics, int cX, int cY, int radius, int start, int end, RGB rgb){
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-        Matrix4f m = graphics.pose().last().pose();
-
-        int r = rgb.r;
-        int g = rgb.g;
-        int b = rgb.b;
-        int a = 255;
-        if (rgb instanceof RGBA rgba)
-            a = rgba.a;
-
-
-
-        for (int i = start - 90; i <= end - 90; i++) {
-            double angle = Math.toRadians(i);
-            float x = (float)(Math.cos(angle) * radius) + cX;
-            float y = (float)(Math.sin(angle) * radius) + cY;
-            bufferBuilder.vertex(m, x, y, 0).color(r,g,b,a).endVertex();
-        }
 
         tesselator.end();
+        RenderSystem.disableBlend();
     }
 
     public static void drawFillArc(GuiGraphics graphics, int cX, int cY, int radius, int start, int end, RGB rgb) {
@@ -491,6 +498,21 @@ public class RenderHelper {
 
     public static void popTransparent(){
         RenderSystem.disableBlend();
+    }
+
+    public static void pushColor(RGB rgb){
+        float r = (float) rgb.r / 255;
+        float g = (float) rgb.g / 255;
+        float b = (float) rgb.b / 255;
+        float a = 1f;
+        if(rgb instanceof RGBA rgba)
+            a = (float) rgba.a / 255;
+        RenderSystem.setShaderColor(r, g, b, a);
+
+    }
+
+    public static void popColor(){
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     public static List<String> splitTextToLines(String text, float textScale, int maxWidth) {
@@ -727,5 +749,70 @@ public class RenderHelper {
             renderer.vertex(m, (float)(x + width), (float)y, 0.0F).color(red, green, blue, alpha).endVertex();
             t.end();
         }
+    }
+
+    public static void drawRoundedRect(GuiGraphics guiGraphics, int x, int y, int width, int height, int radius, RGB rgb) {
+        int r = rgb.r;
+        int g = rgb.g;
+        int b = rgb.b;
+        int a = 255;
+        if (rgb instanceof RGBA rgba) {
+            a = rgba.a;
+        }
+
+        // Отрисовка центрального прямоугольника (без углов)
+        fillRect(guiGraphics, x + radius, y, width - radius * 2, height, rgb); // Верхняя и нижняя части
+        fillRect(guiGraphics, x, y + radius, width, height - radius * 2, rgb); // Левая и правая части
+
+        // Отрисовка закругленных углов (дуги)
+        drawArc(guiGraphics, x + radius,   y + radius, radius, 270, 180, rgb); // Левый верхний угол
+        drawArc(guiGraphics, x + width - radius, y + radius, radius, 0, -90, rgb); // Правый верхний угол
+        drawArc(guiGraphics, x + radius, y + height - radius, radius, -180, -270, rgb); // Левый нижний угол
+        drawArc(guiGraphics, x + width - radius, y + height - radius, radius, 90, 0, rgb); // Правый нижний угол
+    }
+
+    public static void fillRect(GuiGraphics guiGraphics, int x, int y, int width, int height, RGB rgb) {
+        // Метод для заполнения прямоугольной области
+        guiGraphics.fill(x, y, x + width, y + height, rgbaToInt(rgb.r, rgb.g, rgb.b, rgb instanceof RGBA ? ((RGBA) rgb).a : 255));
+    }
+
+    public static void drawArc(GuiGraphics graphics, int cX, int cY, int radius, int startAngle, int endAngle, RGB rgb) {
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        Matrix4f m = graphics.pose().last().pose();
+
+        int r = rgb.r;
+        int g = rgb.g;
+        int b = rgb.b;
+        int a = 255;
+        if (rgb instanceof RGBA rgba) {
+            a = rgba.a;
+        }
+
+        bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
+        bufferBuilder.vertex(m, cX, cY, 0).color(r, g, b, a).endVertex(); // Центр дуги
+
+        for (int i = startAngle; i >= endAngle; i -= 5) {
+            double angle = Math.toRadians(i);
+            float x = (float) (Math.cos(angle) * radius) + cX;
+            float y = (float) (Math.sin(angle) * radius) + cY;
+            bufferBuilder.vertex(m, x, y, 0).color(r, g, b, a).endVertex();
+        }
+
+        tesselator.end();
+    }
+
+    public static int rgbaToInt(int r, int g, int b, int a) {
+        return (a << 24) | (r << 16) | (g << 8) | b;
+    }
+
+    public static void pushScissor(GuiGraphics guiGraphics, Vector2 pos, Vector2 size){
+        guiGraphics.enableScissor(pos.x, pos.y, pos.x + size.x, pos.y + size.y);
+        guiGraphics.pose().pushPose();
+    }
+
+    public static void popScissor(GuiGraphics guiGraphics){
+        guiGraphics.pose().popPose();
+        guiGraphics.disableScissor();
     }
 }

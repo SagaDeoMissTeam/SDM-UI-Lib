@@ -129,6 +129,22 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
     }
 
     /**
+     * Interpolates between two RGB colors using linear interpolation.
+     *
+     * @param colorA The first RGB color to interpolate from.
+     * @param colorC The second RGB color to interpolate to.
+     * @param t The interpolation factor, ranging from 0.0 to 1.0. A value of 0.0 returns {@code colorA},
+     *          a value of 1.0 returns {@code colorC}, and values in between perform linear interpolation.
+     * @return A new RGB color representing the interpolated result.
+     */
+    public RGB interpolate(RGB colorA, RGB colorC, float t){
+        int r = (int) (colorA.r * (1 - t) + colorC.r * t);
+        int g = (int) (colorA.g * (1 - t) + colorC.g * t);
+        int b = (int) (colorA.b * (1 - t) + colorC.b * t);
+        return new RGB(r, g, b);
+    }
+
+    /**
      * Renders a filled rectangle with the current RGB color.
      *
      * @param graphics The GUI graphics context.
@@ -167,12 +183,12 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void drawLine(GuiGraphics graphics, int x, int y, int x2, int y2, float lineWidth) {
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderHelper.drawLine(graphics, x, y, x2, y2, lineWidth, this);
-        RenderSystem.disableBlend();
+//        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+//        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+//        RenderSystem.enableBlend();
+//        RenderSystem.defaultBlendFunc();
+//        RenderHelper.drawLine(graphics, x, y, x2, y2, lineWidth, this);
+//        RenderSystem.disableBlend();
     }
 
     /**
@@ -212,5 +228,15 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
             tesselator.end();
             RenderSystem.disableBlend();
         }
+    }
+
+    @Override
+    public void drawRoundFill(GuiGraphics guiGraphics, int x, int y, int width, int height, int radius) {
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderHelper.drawRoundedRect(guiGraphics,x,y,width,height, radius,this);
+        RenderSystem.disableBlend();
     }
 }

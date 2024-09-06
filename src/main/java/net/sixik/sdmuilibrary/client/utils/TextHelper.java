@@ -5,7 +5,12 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
+import net.sixik.sdmuilibrary.client.utils.math.Vector2f;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class TextHelper {
 
@@ -83,6 +88,108 @@ public class TextHelper {
             text += "...";
         }
         graphics.drawString(Minecraft.getInstance().font, text, pos.x, pos.y, rgb.toInt());
+    }
+
+
+    /**
+     * Calculates the size of the given text when rendered with the specified scale,
+     * ensuring that the width does not exceed the given maximum width.
+     *
+     * @param text      The text to calculate the size for.
+     * @param wight     The maximum width allowed for the text.
+     * @param scale     The initial scale at which to render the text.
+     * @param steps     The number of iterations to adjust the scale to fit within the maximum width.
+     *
+     * @return A Vector2f representing the width and scale of the text.
+     *         The width is the actual width of the rendered text, and the scale is the final scale used.
+     *         If the text cannot fit within the maximum width after the specified number of steps,
+     *         the scale will be less than the initial scale, and the width will be the maximum allowed width.
+     */
+    public static Vector2f getTextRenderSize(String text, int wight, float scale, int steps){
+        float s = scale;
+        float w = 0;
+
+        for (int i = 0; i < steps; i++) {
+            w = getTextWidth(text, s);
+            s -= 0.01f;
+            if(w <= wight)
+                return new Vector2f(w,s);
+        }
+
+        return new Vector2f(s,w);
+    }
+
+    public static int getTextHeight(){
+        return Minecraft.getInstance().font.lineHeight;
+    }
+
+    public static float getTextHeight(float scale){
+        return getTextHeight() * scale;
+    }
+
+    public static int getTextWidth(String text){
+        return Minecraft.getInstance().font.width(text);
+    }
+
+    public static float getTextWidth(String text, float scale){
+        return Minecraft.getInstance().font.width(text) * scale;
+    }
+
+    public static List<String> splitTextToLines(String text, float textScale, int maxWidth) {
+        if (text.isEmpty()) return Collections.emptyList();
+        if (!text.contains(" ") && !text.contains("\n")) return Collections.singletonList(text);
+
+        List<String> lines = new ArrayList<>();
+        StringBuilder builder = new StringBuilder();
+
+        int index = 0;
+        int wordStartIndex = 0;
+        boolean wordProcessing = false;
+        char prevSymbol = '0';
+
+        for (char symbol : text.toCharArray()) {
+            if (symbol != ' ') {
+                wordProcessing = true;
+                if (prevSymbol == ' ') {
+                    wordStartIndex = index;
+                }
+            }
+
+            if (symbol == '\n') {
+                lines.add(builder.toString());
+                builder.delete(0, builder.length());
+                index = 0;
+                continue;
+            }
+
+            if (getTextWidth(builder.toString() + symbol, textScale) <= maxWidth) {
+                builder.append(symbol);
+            } else {
+                if (symbol == '.' || symbol == ',' || symbol == '!' || symbol == '?') {
+                    builder.append(symbol);
+                }
+                if (wordProcessing) {
+                    lines.add(builder.toString().substring(0, wordStartIndex));
+                    builder.delete(0, wordStartIndex);
+                } else {
+                    lines.add(builder.toString());
+                    builder.delete(0, builder.length());
+                }
+                if (symbol != ' ') {
+                    builder.append(symbol);
+                }
+                index = builder.length() - 1;
+            }
+
+            wordProcessing = false;
+            prevSymbol = symbol;
+            index++;
+        }
+
+        if (builder.length() != 0) {
+            lines.add(builder.toString());
+        }
+        return lines;
     }
 
 }

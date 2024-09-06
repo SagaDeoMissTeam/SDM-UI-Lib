@@ -1,20 +1,11 @@
 package net.sixik.sdmuilibrary.client.screen;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.sixik.sdmuilibrary.client.utils.RenderHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
-import net.sixik.sdmuilibrary.client.utils.misc.Colors;
-import net.sixik.sdmuilibrary.client.utils.misc.GradientRBG;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
-import net.sixik.sdmuilibrary.client.widgets.buttons.SimpleButtonWidget;
-import net.sixik.sdmuilibrary.client.widgets.list.BaseDropDownListWidget;
+import net.sixik.sdmuilibrary.client.widgets.RenderWidget;
 import net.sixik.sdmuilibrary.client.widgets.progressBar.BasicProgressBarWidget;
 import net.sixik.sdmuilibrary.client.widgets.text.fields.BasicTextFieldWidget;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class TestScreen extends BaseScreen {
 
@@ -34,17 +25,26 @@ public class TestScreen extends BaseScreen {
 //
 //        });
 
-        List<String> values = List.of("foemfopwef","Очень длинное сообщение пиздец", UUID.randomUUID().toString(),"t","f","y","e","y","i","oo","pp","[[","]]","vv","bb","nn","mm");
+//        List<String> values = List.of("foemfopwef","Очень длинное сообщение пиздец", UUID.randomUUID().toString(),"t","f","y","e","y","i","oo","pp","[[","]]","vv","bb","nn","mm");
 
-        addRenderableWidget(new BaseDropDownListWidget(Vector2.of(100,100), 100, 5, values, "foemfopwef"));
+        RenderWidget widget = addRenderableWidget(new RenderWidget(Vector2.of(100,100), Vector2.of(20,20)));
 
-
-
-
+//
+//        widget.addRenderableWidget(new ColorButtonWidget(
+//                List.of(
+//                        RGBA.create(100,200,100,255),
+//                        RGBA.create(150,200,100,255),
+//                        RGBA.create(5,2,100,255)
+//                ),
+//                Vector2.of(100,100), Vector2.of(20,20)));
+//
     }
+
+
 
     @Override
     public void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 
+        RGB.create(200,200,200).drawLine(graphics, 10,10,20,20, 5f);
     }
 }

@@ -9,31 +9,28 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.sixik.sdmuilibrary.client.screen.TestScreen;
+import net.sixik.sdmuilibrary.client.screen.examples.GameUIScreen;
 import org.slf4j.Logger;
 
-// The value here should match an entry in the META-INF/mods.toml file
 @Mod(SDMUILibrary.MODID)
 public class SDMUILibrary {
-
-    public static final boolean DEBUG = false;
 
     public static final String MODID = "sdm_ui_library";
     private static final Logger LOGGER = LogUtils.getLogger();
 
+    public static boolean debugMode = false;
 
     public SDMUILibrary() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         MinecraftForge.EVENT_BUS.register(this);
-
 
     }
 
     @SubscribeEvent
     public void on(PlayerInteractEvent.RightClickEmpty event) {
         if (event.getEntity().level().isClientSide) {
-            if(DEBUG) {
-                Minecraft.getInstance().setScreen(new TestScreen());
+            if(debugMode) {
+                Minecraft.getInstance().setScreen(new GameUIScreen());
             }
         }
     }

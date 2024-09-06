@@ -14,4 +14,13 @@ public interface Colors {
     RGB POLAR_NIGHT_3 = RGB.fromARGB(4410462);
     RGB POLAR_NIGHT_4 = RGB.fromARGB(5002858);
 
+
+    RGB UI_NIGHT_0 = RGB.create(50,69,84);
+    RGB UI_NIGHT_1 = RGB.create(18,28,40);
+    RGB UI_NIGHT_2 = RGB.create(31,44,61);
+
+    RGB UI_GOLD_0 = RGB.create(179,149,78);
+    RGB UI_GOLD_1 = RGB.create(145,116,51);
+    RGB UI_GOLD_2 = RGB.create(221,193,120);
+
 }

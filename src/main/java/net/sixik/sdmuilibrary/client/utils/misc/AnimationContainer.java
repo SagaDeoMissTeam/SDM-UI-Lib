@@ -6,15 +6,13 @@ import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 
 import java.util.List;
 
-@Deprecated
+
 public interface AnimationContainer extends ISDMRender {
 
-    Vector2 getPosition();
-    Vector2 getSize();
     List<ISDMRender> getWidgets();
     AnimationType getType();
 
-    default void customAnimation(GuiGraphics graphics, int x, int y, int width, int height, float tick){
+    default void customAnimation(ISDMRender widget, GuiGraphics graphics, int x, int y, int width, int height, float tick){
 
     }
 

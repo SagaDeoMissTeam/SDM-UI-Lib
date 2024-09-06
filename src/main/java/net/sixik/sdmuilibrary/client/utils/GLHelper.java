@@ -3,8 +3,29 @@ package net.sixik.sdmuilibrary.client.utils;
 import net.minecraft.client.gui.GuiGraphics;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.CenterOperators;
+import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 
 public class GLHelper {
+
+    public static void pushColor(RGB rgb){
+        RenderHelper.pushColor(rgb);
+    }
+
+    public static void popColor(){
+        RenderHelper.popColor();
+    }
+
+    public static void pushScissor(GuiGraphics guiGraphics, Vector2 pos, Vector2 size){
+        RenderHelper.pushScissor(guiGraphics, pos, size);
+    }
+
+    public static void pushScissor(GuiGraphics guiGraphics, int x, int y, int w, int h){
+        RenderHelper.pushScissor(guiGraphics, new Vector2(x,y), new Vector2(w,h));
+    }
+
+    public static void popScissor(GuiGraphics guiGraphics){
+        RenderHelper.popScissor(guiGraphics);
+    }
 
     public static void pushScale(GuiGraphics graphics, int scale, Vector2 position) {
         RenderHelper.pushScale(graphics, position.x, position.y, scale);
