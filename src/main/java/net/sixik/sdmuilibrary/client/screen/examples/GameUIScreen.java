@@ -8,14 +8,10 @@ import net.sixik.sdmuilibrary.client.utils.TextHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.CenterOperators;
 import net.sixik.sdmuilibrary.client.utils.misc.Colors;
-import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 import net.sixik.sdmuilibrary.client.widgets.RenderWidget;
-import net.sixik.sdmuilibrary.client.widgets.SDMWidget;
 import net.sixik.sdmuilibrary.client.widgets.buttons.BasicButtonWidget;
 import net.sixik.sdmuilibrary.client.widgets.buttons.SimpleButtonWidget;
-import net.sixik.sdmuilibrary.client.widgets.scroll.ScrollWidget;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GameUIScreen extends BaseScreen {

@@ -1,19 +1,15 @@
 package net.sixik.sdmuilibrary.client.screen;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.sixik.sdmuilibrary.client.render.container.RenderContainerImpl;
 import net.sixik.sdmuilibrary.client.utils.GLHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.widgets.RenderWidget;
 import net.sixik.sdmuilibrary.client.widgets.SDMWidget;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 
 public class BaseScreen extends Screen {
 

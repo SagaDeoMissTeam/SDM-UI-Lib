@@ -1,6 +1,5 @@
 package net.sixik.sdmuilibrary.client.utils.misc;
 
-import dev.ftb.mods.ftblibrary.icon.Color4I;
 /**
  * This interface provides color constants for a specific color palette.
  * The colors are defined using the RGB color model.

@@ -25,14 +25,7 @@ public class PlayerHeadWidget extends SDMWidget {
     }
 
     public void getSkin(){
-        for (Map.Entry<MinecraftProfileTexture.Type, MinecraftProfileTexture> d1 : Minecraft.getInstance().getSkinManager().getInsecureSkinInformation(Minecraft.getInstance().player.getGameProfile()).entrySet()) {
-            if(d1.getKey() == MinecraftProfileTexture.Type.SKIN){
-                playerSkin = Minecraft.getInstance().getSkinManager().registerTexture(d1.getValue(),d1.getKey());
-                return;
-            }
-        }
-
-        playerSkin = DefaultPlayerSkin.getDefaultSkin(Minecraft.getInstance().player.getGameProfile().getId());
+        playerSkin = Minecraft.getInstance().getSkinManager().getInsecureSkin(Minecraft.getInstance().getGameProfile()).texture();
     }
 
     @Override

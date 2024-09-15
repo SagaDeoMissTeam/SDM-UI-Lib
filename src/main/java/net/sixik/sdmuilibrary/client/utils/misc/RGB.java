@@ -2,14 +2,11 @@ package net.sixik.sdmuilibrary.client.utils.misc;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.sixik.sdmuilibrary.client.render.api.ISDMAdditionRender;
 import net.sixik.sdmuilibrary.client.render.api.ISDMRender;
 import net.sixik.sdmuilibrary.client.utils.RenderHelper;
@@ -163,10 +160,11 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
             Tesselator tesselator = Tesselator.getInstance();
-            BufferBuilder buffer = tesselator.getBuilder();
-            buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
             RenderHelper.addFillToBuffer(graphics, buffer, x, y, width, height, this);
-            tesselator.end();
+
+            BufferUploader.drawWithShader(buffer.buildOrThrow());
         }
     }
 
@@ -206,12 +204,8 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
         Matrix4f matrix = graphics.pose().last().pose();
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-        ShapesRender.drawCircle(matrix,bufferBuilder,new Vector2f(x,y),radius,segments, this);
-        tesselator.end();
+        ShapesRender.drawCircle(matrix,new Vector2f(x,y),radius,segments, this);
         RenderSystem.disableBlend();
     }
 
@@ -223,9 +217,9 @@ public class RGB implements ISDMRender, ISDMAdditionRender {
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             Tesselator tesselator = Tesselator.getInstance();
-            BufferBuilder buffer = tesselator.getBuilder();
+            BufferBuilder buffer =  tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
             RenderHelper.addFillTriangleToBuffer(graphics,buffer,x,y,w,h,this);
-            tesselator.end();
+            BufferUploader.drawWithShader(buffer.buildOrThrow());
             RenderSystem.disableBlend();
         }
     }

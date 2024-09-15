@@ -1,12 +1,9 @@
 package net.sixik.sdmuilibrary.client.widgets.scroll;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.util.Mth;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.widgets.RenderWidget;
 import net.sixik.sdmuilibrary.client.widgets.SDMWidget;
-import org.jetbrains.annotations.NotNull;
 
 public class ScrollWidget extends RenderWidget {
     private int maxScroll = 0;
@@ -88,16 +85,16 @@ public class ScrollWidget extends RenderWidget {
 
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta, double d1) {
         // Прокручиваем содержимое на 1 пиксель за каждый шаг скроллинга
 
         scrolling = true;
 
         if(scrolling) {
-            scroll -= scrollDelta;
+            scroll -= d1;
         }
         System.out.println(scroll);
-        return super.mouseScrolled(mouseX, mouseY, scrollDelta);
+        return super.mouseScrolled(mouseX, mouseY, scrollDelta, d1);
     }
 
     @Override

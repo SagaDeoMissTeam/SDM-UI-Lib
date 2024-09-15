@@ -1,7 +1,6 @@
 package net.sixik.sdmuilibrary.client.widgets.misc;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.sixik.sdmuilibrary.client.utils.RenderHelper;

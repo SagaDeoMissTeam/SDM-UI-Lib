@@ -1,7 +1,6 @@
 package net.sixik.sdmuilibrary.client.widgets;
 
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -51,12 +50,12 @@ public class RenderWidget extends SDMWidget {
 
 
     @Override
-    public boolean mouseScrolled(double p_94734_, double p_94735_, double p_94736_) {
+    public boolean mouseScrolled(double p_94734_, double p_94735_, double p_94736_, double d1) {
         for (SDMWidget renderable : renderables) {
-            renderable.mouseScrolled(p_94734_, p_94735_, p_94736_);
+            renderable.mouseScrolled(p_94734_, p_94735_, p_94736_, d1);
         }
 
-        return super.mouseScrolled(p_94734_, p_94735_, p_94736_);
+        return super.mouseScrolled(p_94734_, p_94735_, p_94736_, d1);
     }
 
     @Override
