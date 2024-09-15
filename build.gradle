@@ -135,7 +135,6 @@ repositories {
         url "https://cursemaven.com"
     }
 }
-
 dependencies {
     // Specify the version of Minecraft to use.
     // Any artifact can be supplied so long as it has a "userdev" classifier artifact and is a compatible patcher artifact.
@@ -145,6 +144,7 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
 
+    compileOnly files("libs/sdm_bestiary-1.20.1-v3.jar")
     compileOnly fg.deobf("curse.maven:ftb-library-forge-404465:5567591")
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
@@ -200,6 +200,7 @@ tasks.named('jar', Jar).configure {
     // This is the preferred method to reobfuscate your jar file
     finalizedBy 'reobfJar'
 }
+
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource

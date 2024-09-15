@@ -1,10 +1,12 @@
 package net.sixik.sdmuilibrary.client.widgets.scroll;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.widgets.RenderWidget;
 import net.sixik.sdmuilibrary.client.widgets.SDMWidget;
+import org.jetbrains.annotations.NotNull;
 
 public class ScrollWidget extends RenderWidget {
     private int maxScroll = 0;
@@ -57,6 +59,32 @@ public class ScrollWidget extends RenderWidget {
         graphics.fill(x, scrollbarY, x + 5, scrollbarY + scrollbarHeight, 0xFF000000);
     }
 
+
+//    private void renderScrollBar(@NotNull PoseStack poseStack) {
+//        if (this.components.size() > this.maxLines) {
+//            int scrollSize = this.height * this.maxLines / this.components.size();
+//            int maxScroll = this.components.size() - this.maxLines;
+//            int scrollShift = (int)((float)(this.height - scrollSize) / (float)maxScroll * (float)this.scroll);
+//            int x = this.x + this.width - 3;
+//            int y = this.y + scrollShift;
+//            fill(poseStack, x, this.y, this.x + this.width, this.y + this.height, -584965598);
+//            fill(poseStack, x, y, this.x + this.width, this.y + scrollShift + scrollSize, -578254712);
+//        }
+//
+//    }
+//
+//    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+//        int maxScroll = this.components.size() - this.maxLines;
+//        if (amount < 0.0 && this.scroll < maxScroll) {
+//            ++this.scroll;
+//        }
+//
+//        if (amount > 0.0 && this.scroll > 0) {
+//            --this.scroll;
+//        }
+//
+//        return true;
+//    }
 
 
     @Override

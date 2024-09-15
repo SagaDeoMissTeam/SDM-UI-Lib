@@ -12,6 +12,7 @@ import java.util.List;
 
 public class RenderWidget extends SDMWidget {
 
+    public boolean scissor = true;
 
     public List<SDMWidget> renderables = Lists.newArrayList();
     private final List<NarratableEntry> narratables = com.google.common.collect.Lists.newArrayList();

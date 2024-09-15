@@ -1,5 +1,6 @@
 package net.sixik.sdmuilibrary.client.screen;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
@@ -11,6 +12,8 @@ import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.widgets.RenderWidget;
 import net.sixik.sdmuilibrary.client.widgets.SDMWidget;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 
 public class BaseScreen extends Screen {
 
@@ -26,15 +29,13 @@ public class BaseScreen extends Screen {
         draw(graphics, mouseX, mouseY, partialTicks);
         for(Renderable renderable : this.renderables) {
             if(renderable instanceof RenderWidget renderWiget) {
-                GLHelper.pushScissor(graphics, position, size);
-                renderable.render(graphics, mouseX, mouseY, partialTicks);
-                GLHelper.popScissor(graphics);
+                if(renderWiget.scissor) {
+                       GLHelper  .pushScissor(graphics, position, size);
+                       renderable.render     (graphics, mouseX, mouseY, partialTicks);
+                       GLHelper  .popScissor (graphics);
+                } else renderable.render     (graphics, mouseX, mouseY, partialTicks);
             } else
                 renderable.render(graphics, mouseX, mouseY, partialTicks);
-
-
-
-
         }
     }
 

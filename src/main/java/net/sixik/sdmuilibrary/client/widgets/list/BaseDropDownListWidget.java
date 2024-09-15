@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.sixik.sdmuilibrary.client.utils.GLHelper;
 import net.sixik.sdmuilibrary.client.utils.RenderHelper;
 import net.sixik.sdmuilibrary.client.utils.TextHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
@@ -85,11 +86,12 @@ public class BaseDropDownListWidget<T> extends BasicButtonWidget {
 
     public void drawList(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY, float tick){
         if(opened){
+            GLHelper.pushScissor(graphics, new Vector2(x, y), new Vector2(width, sizeOfTextField * maxDisplayed));
             for (int i = 0; i < maxDisplayed; i++) {
                 drawContent(graphics, x, y, width, sizeOfTextField, mouseX, mouseY, tick, i);
                 y += sizeOfTextField;
             }
-
+            GLHelper.popScissor(graphics);
 
         }
     }

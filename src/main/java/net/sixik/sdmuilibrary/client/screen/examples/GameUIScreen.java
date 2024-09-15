@@ -108,7 +108,7 @@ public class GameUIScreen extends BaseScreen {
         page1Container = new RenderWidget(position, new Vector2(size.x - (size.x / 6 * 2), size.y));
 
 
-        int pageButtons = 200;
+        int pageButtons = list.size();
         Vector2 pageButtonSize = new Vector2(16,16);
         Vector2 pos = new Vector2(position.x + 10, position.y + 10);
 
@@ -135,7 +135,7 @@ public class GameUIScreen extends BaseScreen {
                     @Override
                     public void onClick(double mouseX, double mouseY) {
                         if(selectedButtonOnPage != d1) {
-                            //selectedButtonOnPage = d1;
+                            selectedButtonOnPage = d1;
                         }
                     }
 
