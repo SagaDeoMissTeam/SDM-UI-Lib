@@ -1,10 +1,16 @@
 package net.sixik.sdmuilibrary.client.utils.misc;
 
+import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.sixik.sdmuilibrary.client.render.api.ISDMRender;
 import net.sixik.sdmuilibrary.client.utils.RenderHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
+import net.sixik.sdmuilibrary.client.utils.math.Vector2f;
 import net.sixik.sdmuilibrary.client.utils.renders.TextureRenderHelper;
 
 /**

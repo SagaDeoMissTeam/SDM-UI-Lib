@@ -5,6 +5,7 @@ import net.minecraft.util.RandomSource;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 import net.sixik.sdmuilibrary.client.widgetsFake.RGBFakeWidget;
+import net.sixik.sdmuilibrary.client.widgetsFake.SDMFakeWidget;
 
 import java.util.ArrayList;
 import java.util.List;

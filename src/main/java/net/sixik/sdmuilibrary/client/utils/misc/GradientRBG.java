@@ -66,8 +66,11 @@ public class GradientRBG extends RGB{
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-            BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            Tesselator tesselator = Tesselator.getInstance();
+            BufferBuilder buffer = tesselator.getBuilder();
+            buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
             RenderHelper.addFillToBufferGradient(graphics, buffer, x, y, width, height, start, end);
+            tesselator.end();
         }
     }
 
@@ -78,7 +81,15 @@ public class GradientRBG extends RGB{
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            RenderHelper.addFillTriangleToBufferGradient(graphics,x,y,w,h,start, end);
+
+            Tesselator tesselator = Tesselator.getInstance();
+            BufferBuilder buffer = tesselator.getBuilder();
+
+            RenderHelper.addFillTriangleToBufferGradient(graphics,buffer,x,y,w,h,start, end);
+            tesselator.end();
+
+
+
             RenderSystem.disableBlend();
         }
     }

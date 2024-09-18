@@ -116,7 +116,7 @@ public class TextHelper {
                 return new Vector2f(w,s);
         }
 
-        return new Vector2f(s,w);
+        return new Vector2f(w,s);
     }
 
     public static int getTextHeight(){

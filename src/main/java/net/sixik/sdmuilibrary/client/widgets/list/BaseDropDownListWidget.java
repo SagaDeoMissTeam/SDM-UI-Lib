@@ -1,6 +1,10 @@
 package net.sixik.sdmuilibrary.client.widgets.list;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.sixik.sdmuilibrary.client.utils.GLHelper;
@@ -10,6 +14,8 @@ import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2d;
 import net.sixik.sdmuilibrary.client.utils.misc.Colors;
 import net.sixik.sdmuilibrary.client.utils.misc.CursorType;
+import net.sixik.sdmuilibrary.client.utils.misc.RGB;
+import net.sixik.sdmuilibrary.client.widgets.SDMWidget;
 import net.sixik.sdmuilibrary.client.widgets.buttons.BasicButtonWidget;
 
 import java.util.ArrayList;
@@ -53,11 +59,10 @@ public class BaseDropDownListWidget<T> extends BasicButtonWidget {
         return this;
     }
 
-
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
         if(!opened) return false;
-        setScroll(scroll - Mth.sign(scrollY));
+        setScroll(scroll - Mth.sign(scrollDelta));
 
         return false;
     }

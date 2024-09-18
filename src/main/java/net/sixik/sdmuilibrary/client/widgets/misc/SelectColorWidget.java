@@ -3,6 +3,7 @@ package net.sixik.sdmuilibrary.client.widgets.misc;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.RGBA;
 import net.sixik.sdmuilibrary.client.widgets.RenderWidget;
+import net.sixik.sdmuilibrary.client.widgets.SDMWidget;
 
 public class SelectColorWidget extends RenderWidget {
 

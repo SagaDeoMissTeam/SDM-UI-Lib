@@ -1,6 +1,7 @@
 package net.sixik.sdmuilibrary.client.utils.renders;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.AbstractTexture;
@@ -23,6 +24,8 @@ public class TextureRenderHelper {
     public static void renderSlicedTexture(GuiGraphics guiGraphics, ResourceLocation texture, int x, int y, int width, int height, int sliceSize, int textureW, int textureH) {
         int rightX = x + width - sliceSize;
         int bottomY = y + height - sliceSize;
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
 
         // Левый верхний угол
         guiGraphics.blit(texture, x, y, sliceSize, sliceSize, 0, 0, sliceSize, sliceSize, textureW, textureH);
@@ -44,6 +47,7 @@ public class TextureRenderHelper {
 
         // Центральная часть
         guiGraphics.blit(texture, x + sliceSize, y + sliceSize, width - sliceSize * 2, height - sliceSize * 2, sliceSize, sliceSize, textureW - sliceSize * 2, textureH - sliceSize * 2, textureW, textureH);
+        RenderSystem.disableBlend();
     }
 
 

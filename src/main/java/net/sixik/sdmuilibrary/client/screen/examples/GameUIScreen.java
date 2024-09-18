@@ -8,10 +8,15 @@ import net.sixik.sdmuilibrary.client.utils.TextHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.CenterOperators;
 import net.sixik.sdmuilibrary.client.utils.misc.Colors;
+import net.sixik.sdmuilibrary.client.utils.misc.RGB;
+import net.sixik.sdmuilibrary.client.utils.misc.RGBA;
 import net.sixik.sdmuilibrary.client.widgets.RenderWidget;
+import net.sixik.sdmuilibrary.client.widgets.SDMWidget;
 import net.sixik.sdmuilibrary.client.widgets.buttons.BasicButtonWidget;
 import net.sixik.sdmuilibrary.client.widgets.buttons.SimpleButtonWidget;
+import net.sixik.sdmuilibrary.client.widgets.scroll.ScrollWidget;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameUIScreen extends BaseScreen {
@@ -80,9 +85,12 @@ public class GameUIScreen extends BaseScreen {
 
 
     public void drawBackground(GuiGraphics graphics, int mouseX, int mouseY,float partialTicks){
-        Colors.POLAR_NIGHT_0.draw(graphics, position.x, position.y, size.x, size.y, partialTicks);
-        RenderHelper.drawHollowRect(graphics, position.x - 1, position.y - 1, size.x + 2, size.y + 2, Colors.POLAR_NIGHT_1, false);
-        drawPage(graphics, mouseX, mouseY, partialTicks);
+
+        RenderHelper.drawRoundedRectDown(graphics, position.x, position.y, size.x, size.y, 10, Colors.POLAR_NIGHT_0);
+
+//        Colors.POLAR_NIGHT_0.draw(graphics, position.x, position.y, size.x, size.y, partialTicks);
+//        RenderHelper.drawHollowRect(graphics, position.x - 1, position.y - 1, size.x + 2, size.y + 2, Colors.POLAR_NIGHT_1, false);
+//        drawPage(graphics, mouseX, mouseY, partialTicks);
     }
 
     public void drawPage(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks){

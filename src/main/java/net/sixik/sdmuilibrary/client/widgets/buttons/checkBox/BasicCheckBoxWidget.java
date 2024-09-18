@@ -1,6 +1,7 @@
 package net.sixik.sdmuilibrary.client.widgets.buttons.checkBox;
 
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.widgets.buttons.BasicButtonWidget;
 
