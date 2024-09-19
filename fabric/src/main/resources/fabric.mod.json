@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "sdm_ui_lib",
+  "version": "${version}",
+
+  "name": "SDM UI Lib",
+  "description": "",
+  "authors": [],
+  "contact": {},
+
+  "license": "All Rights Reserved",
+  "icon": "icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.sixik.sdmuilib.fabric.SDMUILibFabric"
+    ]
+  },
+  "mixins": [
+    "sdm_ui_lib.mixins.json",
+    "sdm_ui_lib-common.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.5",
+    "minecraft": ">=1.20.1"
+  }
+}
