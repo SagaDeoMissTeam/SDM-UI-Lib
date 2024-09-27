@@ -6,3 +6,5 @@ fabric/build/
 forge/run/
 forge/build/
 forge/.gradle/
+neoforge/build/
+neoforge/.gradle/

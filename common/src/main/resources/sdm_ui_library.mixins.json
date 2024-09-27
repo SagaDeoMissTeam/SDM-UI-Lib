@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "net.sixik.sdmuilibrary.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "client": [
+    "ScreenAccessor"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
