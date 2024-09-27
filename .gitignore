@@ -1,0 +1,8 @@
+common/build/
+common/.gradle/
+fabric/.gradle/
+fabric/run/
+fabric/build/
+forge/run/
+forge/build/
+forge/.gradle/
