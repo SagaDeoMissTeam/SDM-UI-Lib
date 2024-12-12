@@ -1,19 +1,15 @@
 package net.sixik.v2.color;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import net.sixik.v2.render.TextureRenderHelper;
-import org.joml.Matrix4f;
 
 public class TextureColor extends RGBA{
 
@@ -71,7 +67,7 @@ public class TextureColor extends RGBA{
     }
 
     @Override
-    public void draw(GuiGraphics graphics, int x, int y, int w, int h) {
+    public void draw(PoseStack graphics, int x, int y, int w, int h) {
         this.setupTexture();
         if(tileSize <= 0) {
             TextureRenderHelper.renderTextureRect(graphics, x, y, w, h, this, this.minU, this.minV, this.maxU, this.maxV);
@@ -80,7 +76,7 @@ public class TextureColor extends RGBA{
             int g = this.g;
             int b = this.b;
             int a = this.a;
-            Matrix4f m = graphics.pose().last().pose();
+            Matrix4f m = graphics.last().pose();
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.getBuilder();
             RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
@@ -95,22 +91,22 @@ public class TextureColor extends RGBA{
     }
 
     @Override
-    public void drawTriangle(GuiGraphics graphics, int x, int y, int w, int h) {
+    public void drawTriangle(PoseStack graphics, int x, int y, int w, int h) {
 
     }
 
     @Override
-    public void drawRoundFill(GuiGraphics guiGraphics, int x, int y, int width, int height, int radius) {
+    public void drawRoundFill(PoseStack guiGraphics, int x, int y, int width, int height, int radius) {
 
     }
 
     @Override
-    public void drawCircle(GuiGraphics graphics, int x, int y, int radius, int segments) {
+    public void drawCircle(PoseStack graphics, int x, int y, int radius, int segments) {
 
     }
 
     @Override
-    public void drawLine(GuiGraphics graphics, int x, int y, int x2, int y2, float lineWidth) {
+    public void drawLine(PoseStack graphics, int x, int y, int x2, int y2, float lineWidth) {
 
     }
 }

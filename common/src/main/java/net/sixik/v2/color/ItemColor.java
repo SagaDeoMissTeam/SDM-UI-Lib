@@ -1,7 +1,6 @@
 package net.sixik.v2.color;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.sixik.v2.render.ItemRenderHelper;
@@ -24,8 +23,8 @@ public class ItemColor extends RGBA {
     }
 
     @Override
-    public void draw(GuiGraphics graphics, int x, int y, int width, int height) {
-        PoseStack poseStack = graphics.pose();
+    public void draw(PoseStack graphics, int x, int y, int width, int height) {
+        PoseStack poseStack = graphics;
         poseStack.pushPose();
         poseStack.translate((double)x + (double)width / 2.0, (double)y + (double)height / 2.0, 100.0);
         if (width != 16 || height != 16) {
@@ -37,22 +36,22 @@ public class ItemColor extends RGBA {
     }
 
     @Override
-    public void drawCircle(GuiGraphics graphics, int x, int y, int radius, int segments) {
+    public void drawCircle(PoseStack graphics, int x, int y, int radius, int segments) {
 
     }
 
     @Override
-    public void drawLine(GuiGraphics graphics, int x, int y, int x2, int y2, float lineWidth) {
+    public void drawLine(PoseStack graphics, int x, int y, int x2, int y2, float lineWidth) {
 
     }
 
     @Override
-    public void drawRoundFill(GuiGraphics guiGraphics, int x, int y, int width, int height, int radius) {
+    public void drawRoundFill(PoseStack guiGraphics, int x, int y, int width, int height, int radius) {
 
     }
 
     @Override
-    public void drawTriangle(GuiGraphics graphics, int x, int y, int w, int h) {
+    public void drawTriangle(PoseStack graphics, int x, int y, int w, int h) {
 
     }
 }

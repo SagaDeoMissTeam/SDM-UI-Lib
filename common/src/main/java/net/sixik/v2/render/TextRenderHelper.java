@@ -1,8 +1,8 @@
 package net.sixik.v2.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.sixik.v2.color.RGB;
@@ -26,7 +26,7 @@ public class TextRenderHelper {
      * @param text           The text to be rendered.
      * @param textColor      The color of the text.
      */
-    public static void drawText(GuiGraphics poseStack, int x, int y, float size, Component text, int textColor) {
+    public static void drawText(PoseStack poseStack, int x, int y, float size, Component text, int textColor) {
         drawText(poseStack, Minecraft.getInstance().font, x, y, size, text, textColor);
     }
 
@@ -41,12 +41,12 @@ public class TextRenderHelper {
      * @param text           The text to be rendered.
      * @param textColor      The color of the text.
      */
-    public static void drawText(GuiGraphics poseStack, Font font, int x, int y, float size, Component text, int textColor) {
-        poseStack.pose().pushPose();
-        poseStack.pose().scale(size, size, 1.0f);
-        poseStack.pose().translate(x, y, 0);
-        poseStack.drawString(font, text, (int) x, (int) y, textColor);
-        poseStack.pose().popPose();
+    public static void drawText(PoseStack poseStack, Font font, int x, int y, float size, Component text, int textColor) {
+        poseStack.pushPose();
+        poseStack.scale(size, size, 1.0f);
+        poseStack.translate(x, y, 0);
+        font.draw(poseStack, text, (int) x, (int) y, textColor);
+        poseStack.popPose();
     }
 
     /**
@@ -57,54 +57,54 @@ public class TextRenderHelper {
      * @param x              The x-coordinate of the text's position.
      * @param y              The y-coordinate of the text's position.
      */
-    public static void drawText(GuiGraphics graphics, Component text, int x, int y) {
-        graphics.drawString(Minecraft.getInstance().font, text.getString(), x, y, RGB.create(255, 255, 255).toInt());
+    public static void drawText(PoseStack graphics, Component text, int x, int y) {
+        Minecraft.getInstance().font.draw(graphics, text.getString(), x, y, RGB.create(255, 255, 255).toInt());
     }
 
-    public static void drawText(GuiGraphics graphics, String text, int x, int y) {
-        graphics.drawString(Minecraft.getInstance().font, text, x, y, RGB.create(255, 255, 255).toInt());
+    public static void drawText(PoseStack graphics, String text, int x, int y) {
+        Minecraft.getInstance().font.draw(graphics, text, x, y, RGB.create(255, 255, 255).toInt());
     }
 
-    public static void drawText(GuiGraphics graphics, Component text, int x, int y, RGB rgb) {
-        graphics.drawString(Minecraft.getInstance().font, text.getString(), x, y, rgb.toInt());
+    public static void drawText(PoseStack graphics, Component text, int x, int y, RGB rgb) {
+        Minecraft.getInstance().font.draw(graphics, text.getString(), x, y, rgb.toInt());
     }
 
-    public static void drawText(GuiGraphics graphics, String text, int x, int y, RGB rgb) {
-        graphics.drawString(Minecraft.getInstance().font, text, x, y, rgb.toInt());
+    public static void drawText(PoseStack graphics, String text, int x, int y, RGB rgb) {
+        Minecraft.getInstance().font.draw(graphics, text, x, y, rgb.toInt());
     }
 
-    public static void drawTextOverWight(GuiGraphics graphics, Object text, int x, int y, int wight) {
+    public static void drawTextOverWight(PoseStack graphics, Object text, int x, int y, int wight) {
         drawTextOverWight(graphics, Minecraft.getInstance().font, getText(text), new Vector2(x,y), wight, RGB.create(255, 255, 255));
     }
 
-    public static void drawTextOverWight(GuiGraphics graphics, Object text, Vector2 pos, int wight) {
+    public static void drawTextOverWight(PoseStack graphics, Object text, Vector2 pos, int wight) {
         drawTextOverWight(graphics, Minecraft.getInstance().font, getText(text), pos, wight, RGB.create(255, 255, 255));
     }
 
-    public static void drawTextOverWight(GuiGraphics graphics, Object text, int x, int y, int wight, RGB rgb) {
+    public static void drawTextOverWight(PoseStack graphics, Object text, int x, int y, int wight, RGB rgb) {
         drawTextOverWight(graphics, Minecraft.getInstance().font, getText(text), new Vector2(x,y), wight, rgb);
     }
 
-    public static void drawTextOverWight(GuiGraphics graphics, Object text, Vector2 pos, int wight, RGB rgb) {
+    public static void drawTextOverWight(PoseStack graphics, Object text, Vector2 pos, int wight, RGB rgb) {
         drawTextOverWight(graphics, Minecraft.getInstance().font, getText(text), pos, wight, rgb);
     }
 
 
-    public static void drawTextOverWight(GuiGraphics graphics, Font font, Object text, int x, int y, int wight, RGB rgb) {
+    public static void drawTextOverWight(PoseStack graphics, Font font, Object text, int x, int y, int wight, RGB rgb) {
         drawTextOverWight(graphics,font,getText(text),new Vector2(x,y), wight,rgb);
     }
 
-    public static void drawTextOverWight(GuiGraphics graphics, Font font, String text, Vector2 pos, int wight, RGB rgb) {
+    public static void drawTextOverWight(PoseStack graphics, Font font, String text, Vector2 pos, int wight, RGB rgb) {
         if (font.width(text) > wight - 10) {
             while (font.width(text + "...") > wight - 10) {
                 text = text.substring(0, text.length() - 1);
             }
             text += "...";
         }
-        graphics.drawString(Minecraft.getInstance().font, text, pos.x, pos.y, rgb.toInt());
+        Minecraft.getInstance().font.draw(graphics, text, pos.x, pos.y, rgb.toInt());
     }
 
-    public static int getTextWight(GuiGraphics graphics, Object text, float size) {
+    public static int getTextWight(PoseStack graphics, Object text, float size) {
         String f = "";
         if(text instanceof Component component)
             f = component.getString();

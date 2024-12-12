@@ -4,12 +4,16 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Axis;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -21,7 +25,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -33,9 +36,6 @@ import net.sixik.v2.utils.math.Vector2;
 import net.sixik.v2.utils.math.Vector2d;
 import net.sixik.v2.utils.math.Vector2f;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
-import org.joml.Quaternionf;
-import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -144,7 +144,7 @@ public class RenderHelper {
      * @param text           The text to be rendered.
      * @param textColor      The color of the text.
      */
-    public static void drawText(GuiGraphics poseStack, int x, int y, float size, Component text, int textColor) {
+    public static void drawText(PoseStack poseStack, int x, int y, float size, Component text, int textColor) {
         drawText(poseStack, Minecraft.getInstance().font, x, y, size, text, textColor);
     }
 
@@ -159,12 +159,12 @@ public class RenderHelper {
      * @param text           The text to be rendered.
      * @param textColor      The color of the text.
      */
-    public static void drawText(GuiGraphics poseStack, Font font, int x, int y, float size, Component text, int textColor) {
-        poseStack.pose().pushPose();
-        poseStack.pose().scale(size, size, 1.0f);
-        poseStack.pose().translate(x, y, 0);
-        poseStack.drawString(font, text, (int) x, (int) y, textColor);
-        poseStack.pose().popPose();
+    public static void drawText(PoseStack poseStack, Font font, int x, int y, float size, Component text, int textColor) {
+        poseStack.pushPose();
+        poseStack.scale(size, size, 1.0f);
+        poseStack.translate(x, y, 0);
+        font.draw(poseStack, text, (int) x, (int) y, textColor);
+        poseStack.popPose();
     }
 
     /**
@@ -175,25 +175,25 @@ public class RenderHelper {
      * @param x              The x-coordinate of the text's position.
      * @param y              The y-coordinate of the text's position.
      */
-    public static void drawText(GuiGraphics graphics, Component text, int x, int y) {
-        graphics.drawString(Minecraft.getInstance().font, text.getString(), x, y, RGB.create(255, 255, 255).toInt());
+    public static void drawText(PoseStack graphics, Component text, int x, int y) {
+        Minecraft.getInstance().font.draw(graphics, text.getString(), x, y, RGB.create(255, 255, 255).toInt());
     }
 
-    public static void drawText(GuiGraphics graphics, String text, int x, int y) {
-        graphics.drawString(Minecraft.getInstance().font, text, x, y, RGB.create(255, 255, 255).toInt());
+    public static void drawText(PoseStack graphics, String text, int x, int y) {
+        Minecraft.getInstance().font.draw(graphics, text, x, y, RGB.create(255, 255, 255).toInt());
     }
 
-    public static void drawText(GuiGraphics graphics, Component text, int x, int y, RGB rgb) {
-        graphics.drawString(Minecraft.getInstance().font, text.getString(), x, y, rgb.toInt());
+    public static void drawText(PoseStack graphics, Component text, int x, int y, RGB rgb) {
+        Minecraft.getInstance().font.draw(graphics, text.getString(), x, y, rgb.toInt());
     }
 
-    public static void drawText(GuiGraphics graphics, String text, int x, int y, RGB rgb) {
-        graphics.drawString(Minecraft.getInstance().font, text, x, y, rgb.toInt());
+    public static void drawText(PoseStack graphics, String text, int x, int y, RGB rgb) {
+        Minecraft.getInstance().font.draw(graphics, text, x, y, rgb.toInt());
     }
 
-    public static void addRectToBufferWithUV(GuiGraphics graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB rgb, float u0, float v0, float u1, float v1) {
+    public static void addRectToBufferWithUV(PoseStack graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB rgb, float u0, float v0, float u1, float v1) {
         if (w > 0 && h > 0) {
-            Matrix4f m = graphics.pose().last().pose();
+            Matrix4f m = graphics.last().pose();
             int r = rgb.r;
             int g = rgb.g;
             int b = rgb.b;
@@ -207,9 +207,9 @@ public class RenderHelper {
         }
     }
 
-    public static void addFillToBuffer(GuiGraphics graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB rgb){
+    public static void addFillToBuffer(PoseStack graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB rgb){
         if (w > 0 && h > 0) {
-            Matrix4f m = graphics.pose().last().pose();
+            Matrix4f m = graphics.last().pose();
             int r = rgb.r;
             int g = rgb.g;
             int b = rgb.b;
@@ -225,9 +225,9 @@ public class RenderHelper {
     }
 
 
-    public static void addFillTriangleToBuffer(GuiGraphics graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB rgb){
+    public static void addFillTriangleToBuffer(PoseStack graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB rgb){
         buffer.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
-        Matrix4f m = graphics.pose().last().pose();
+        Matrix4f m = graphics.last().pose();
         int r = rgb.r;
         int g = rgb.g;
         int b = rgb.b;
@@ -241,23 +241,23 @@ public class RenderHelper {
         buffer.vertex(m, x + w, y, 0.0F).color(r,g,b,a).endVertex();
     }
 
-    public static void addFillTriangleToBufferGradient(GuiGraphics graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB startRgb, RGB endRgb){
+    public static void addFillTriangleToBufferGradient(PoseStack graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB startRgb, RGB endRgb){
         buffer.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
         RGBA s = startRgb.toARGB();
         RGBA e = endRgb.toARGB();
 
-        Matrix4f m = graphics.pose().last().pose();
+        Matrix4f m = graphics.last().pose();
         buffer.vertex(m, x, y, 0.0F).color(e.r,e.g,e.b,e.a).endVertex();
         buffer.vertex(m, (float) (x + (w / 2)), y + h, 0.0F).color(s.r, s.g,s.b,s.a).endVertex();
         buffer.vertex(m, x + w, y, 0.0F).color(e.r,e.g,e.b,e.a).endVertex();
     }
 
-    public static void addFillToBufferGradient(GuiGraphics graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB startRgb, RGB endRgb){
+    public static void addFillToBufferGradient(PoseStack graphics, BufferBuilder buffer, int x, int y, int w, int h, RGB startRgb, RGB endRgb){
         if (w > 0 && h > 0) {
             RGBA s = startRgb.toARGB();
             RGBA e = endRgb.toARGB();
 
-            Matrix4f m = graphics.pose().last().pose();
+            Matrix4f m = graphics.last().pose();
             buffer.vertex(m, (float)x, (float)(y + h), 0.0F).color(s.r, s.g, s.b, s.a).endVertex();
             buffer.vertex(m, (float)(x + w), (float)(y + h), 0.0F).color(s.r, s.g, s.b, s.a).endVertex();
             buffer.vertex(m, (float)(x + w), (float)y, 0.0F).color(e.r,e.g,e.b,e.a).endVertex();
@@ -265,10 +265,10 @@ public class RenderHelper {
         }
     }
 
-    public static void drawLine(GuiGraphics graphics, RGB rgb) {
+    public static void drawLine(PoseStack graphics, RGB rgb) {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-        Matrix4f m = graphics.pose().last().pose();
+        Matrix4f m = graphics.last().pose();
 
         int r = rgb.r;
         int g = rgb.g;
@@ -295,13 +295,13 @@ public class RenderHelper {
         RenderSystem.disableBlend();
     }
 
-    public static void drawFillArc(GuiGraphics graphics, int cX, int cY, int radius, int start, int end, RGB rgb) {
+    public static void drawFillArc(PoseStack graphics, int cX, int cY, int radius, int start, int end, RGB rgb) {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
 
         // Начинаем построение треугольного вентиля (фан) для круга
         bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-        Matrix4f m = graphics.pose().last().pose();
+        Matrix4f m = graphics.last().pose();
 
         // Настройка цвета
         int r = rgb.r;
@@ -327,11 +327,11 @@ public class RenderHelper {
         tesselator.end();
     }
 
-    public static void drawCircle(GuiGraphics graphics, int x, int y, int radius, RGB rgb) {
+    public static void drawCircle(PoseStack graphics, int x, int y, int radius, RGB rgb) {
         drawArc(graphics, x, y, radius, 0, 360, rgb);
     }
 
-    public static void drawFillCircle(GuiGraphics graphics, int x, int y, int radius, RGB rgb) {
+    public static void drawFillCircle(PoseStack graphics, int x, int y, int radius, RGB rgb) {
         drawFillArc(graphics, x, y, radius, 0, 360, rgb);
     }
 
@@ -348,7 +348,7 @@ public class RenderHelper {
      *
      * @return void
      */
-    public static void drawHollowRect(GuiGraphics graphics, int x, int y, int w, int h, RGB col, boolean roundEdges) {
+    public static void drawHollowRect(PoseStack graphics, int x, int y, int w, int h, RGB col, boolean roundEdges) {
         if (w > 1 && h > 1 && col != null) {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             Tesselator tesselator = Tesselator.getInstance();
@@ -370,44 +370,49 @@ public class RenderHelper {
         }
     }
 
-    public static void renderTexture(GuiGraphics guiGraphics, String texture, int x, int y, int width, int height, int textureX, int textureY, int textureW, int textureH){
+    public static void renderTexture(PoseStack guiGraphics, String texture, int x, int y, int width, int height, int textureX, int textureY, int textureW, int textureH){
         renderTexture(guiGraphics, texture, x,y,width,height, textureX, textureY, textureW, textureH, 256);
     }
 
-    public static void renderTexture(GuiGraphics guiGraphics, String texture, int x, int y, int width, int height, int textureX, int textureY, int textureW, int textureH, int textureSize){
-        guiGraphics.blit(new ResourceLocation(texture), x,y,width,height, textureX, textureY, textureW, textureH, textureSize, textureSize );
+    public static void renderTexture(PoseStack guiGraphics, String texture, int x, int y, int width, int height, int textureX, int textureY, int textureW, int textureH, int textureSize){
+        prepareTextureRendering(new ResourceLocation(texture));
+        GuiComponent.blit(guiGraphics, x,y,width,height, textureX, textureY, textureW, textureH, textureSize, textureSize );
     }
 
-    public static void renderTexture(GuiGraphics guiGraphics, String texture, int x, int y, int width, int height, int textureX, int textureY, int textureW, int textureH, int textureSizeX, int textureSizeY){
-        guiGraphics.blit(new ResourceLocation(texture), x,y,width,height, textureX, textureY, textureW, textureH, textureSizeX, textureSizeY );
+    public static void renderTexture(PoseStack guiGraphics, String texture, int x, int y, int width, int height, int textureX, int textureY, int textureW, int textureH, int textureSizeX, int textureSizeY){
+        prepareTextureRendering(new ResourceLocation(texture));
+        GuiComponent.blit(guiGraphics, x,y,width,height, textureX, textureY, textureW, textureH, textureSizeX, textureSizeY );
     }
 
-    public static void renderTexture(GuiGraphics guiGraphics, ResourceLocation texture, int x, int y, int width, int height, int textureX, int textureY, int textureW){
-        guiGraphics.blit(texture, x,y,width,height, textureX, textureY, textureW, 256, 256);
+    public static void renderTexture(PoseStack guiGraphics, ResourceLocation texture, int x, int y, int width, int height, int textureX, int textureY, int textureW){
+        prepareTextureRendering(texture);
+        GuiComponent.blit(guiGraphics,y,width,height, textureX, textureY, textureW, 256, 256);
     }
 
-    public static void renderTexture(GuiGraphics guiGraphics, ResourceLocation texture, int x, int y, int width, int height, int textureX, int textureY, int textureW, int textureH, int textureSize){
-        guiGraphics.blit(texture, x,y,width,height, textureX, textureY, textureW, textureH, textureSize);
+    public static void renderTexture(PoseStack guiGraphics, ResourceLocation texture, int x, int y, int width, int height, int textureX, int textureY, int textureW, int textureH, int textureSize){
+        prepareTextureRendering(texture);
+        GuiComponent.blit( guiGraphics, x,y,width,height, textureX, textureY, textureW, textureH, textureSize);
     }
 
-    public static void renderTexture(GuiGraphics guiGraphics, ResourceLocation texture, int x, int y, int width, int height, int textureX, int textureY, int textureW, int textureH, int textureSizeX, int textureSizeY){
-        guiGraphics.blit(texture, x,y,width,height, textureX, textureY, textureW, textureH, textureSizeX, textureSizeY );
+    public static void renderTexture(PoseStack guiGraphics, ResourceLocation texture, int x, int y, int width, int height, int textureX, int textureY, int textureW, int textureH, int textureSizeX, int textureSizeY){
+        prepareTextureRendering(texture);
+        GuiComponent.blit(guiGraphics, x,y,width,height, textureX, textureY, textureW, textureH, textureSizeX, textureSizeY );
     }
 
-    public static void pushScale(GuiGraphics guiGraphics, int x, int y, int scale){
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().scale(scale, scale, 1f);
-        guiGraphics.pose().translate((int) (x / scale), (int) (y / scale), 0f);
+    public static void pushScale(PoseStack guiGraphics, int x, int y, int scale){
+        guiGraphics.pushPose();
+        guiGraphics.scale(scale, scale, 1f);
+        guiGraphics.translate((int) (x / scale), (int) (y / scale), 0f);
     }
 
-    public static void pushScale(GuiGraphics guiGraphics, int x, int y, float scale){
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().scale(scale, scale, 1f);
-        guiGraphics.pose().translate((int) (x / scale), (int) (y / scale), 0f);
+    public static void pushScale(PoseStack guiGraphics, int x, int y, float scale){
+        guiGraphics.pushPose();
+        guiGraphics.scale(scale, scale, 1f);
+        guiGraphics.translate((int) (x / scale), (int) (y / scale), 0f);
     }
 
-    public static void pushScale(GuiGraphics guiGraphics, int x, int y, int w, int h, int scale) {
-        guiGraphics.pose().pushPose();
+    public static void pushScale(PoseStack guiGraphics, int x, int y, int w, int h, int scale) {
+        guiGraphics.pushPose();
 
         float scaledWidth = w * scale;
         float scaledHeight = h * scale;
@@ -415,12 +420,12 @@ public class RenderHelper {
         float dx = (w - scaledWidth) / 2.0f;
         float dy = (h - scaledHeight) / 2.0f;
 
-        guiGraphics.pose().translate(x + dx, y + dy, 0);
-        guiGraphics.pose().scale(scale, scale, 1.0F);
+        guiGraphics.translate(x + dx, y + dy, 0);
+        guiGraphics.scale(scale, scale, 1.0F);
     }
 
-    public static void pushScale(GuiGraphics guiGraphics, int x, int y, int w, int h, float scale) {
-        guiGraphics.pose().pushPose();
+    public static void pushScale(PoseStack guiGraphics, int x, int y, int w, int h, float scale) {
+        guiGraphics.pushPose();
 
         float scaledWidth = w * scale;
         float scaledHeight = h * scale;
@@ -428,12 +433,12 @@ public class RenderHelper {
         float dx = (w - scaledWidth) / 2.0f;
         float dy = (h - scaledHeight) / 2.0f;
 
-        guiGraphics.pose().translate(x + dx, y + dy, 0);
-        guiGraphics.pose().scale(scale, scale, 1.0F);
+        guiGraphics.translate(x + dx, y + dy, 0);
+        guiGraphics.scale(scale, scale, 1.0F);
     }
 
-    public static void popScale(GuiGraphics guiGraphics){
-        guiGraphics.pose().popPose();
+    public static void popScale(PoseStack guiGraphics){
+        guiGraphics.popPose();
     }
 
     public static int getScaleSize(int size, float scale){
@@ -445,69 +450,69 @@ public class RenderHelper {
     }
 
 
-    public static void pushUpper(GuiGraphics guiGraphics){
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0, 0, 40f);
+    public static void pushUpper(PoseStack guiGraphics){
+        guiGraphics.pushPose();
+        guiGraphics.translate(0, 0, 40f);
     }
 
-    public static void pushUpper(GuiGraphics guiGraphics, float pos){
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0, 0, pos);
+    public static void pushUpper(PoseStack guiGraphics, float pos){
+        guiGraphics.pushPose();
+        guiGraphics.translate(0, 0, pos);
     }
 
-    public static void popUpper(GuiGraphics guiGraphics){
-        guiGraphics.pose().popPose();
+    public static void popUpper(PoseStack guiGraphics){
+        guiGraphics.popPose();
     }
 
 
-    public static void pushRotate(GuiGraphics guiGraphics, int x, int y, int w, int h, float angle){
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(x + w / 2.0, y + h / 2.0, 0);
-        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(angle));
-        guiGraphics.pose().translate(-w / 2.0, -h / 2.0, 0);
+    public static void pushRotate(PoseStack guiGraphics, int x, int y, int w, int h, float angle){
+        guiGraphics.pushPose();
+        guiGraphics.translate(x + w / 2.0, y + h / 2.0, 0);
+        guiGraphics.mulPose(Vector3f.ZP.rotationDegrees(angle));
+        guiGraphics.translate(-w / 2.0, -h / 2.0, 0);
     }
 
-    public static void pushRotation(GuiGraphics guiGraphics, Vector2 pivot, float angle) {
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(pivot.x, pivot.y, 0);
-        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(angle));
-        guiGraphics.pose().translate(-pivot.x, -pivot.y, 0);
+    public static void pushRotation(PoseStack guiGraphics, Vector2 pivot, float angle) {
+        guiGraphics.pushPose();
+        guiGraphics.translate(pivot.x, pivot.y, 0);
+        guiGraphics.mulPose(Vector3f.ZP.rotationDegrees(angle));
+        guiGraphics.translate(-pivot.x, -pivot.y, 0);
     }
 
-    public static void pushTransform(GuiGraphics guiGraphics, Vector2 pos, Vector2 size, float scale, float rotationAngle) {
+    public static void pushTransform(PoseStack guiGraphics, Vector2 pos, Vector2 size, float scale, float rotationAngle) {
         Vector2 center = new Vector2(pos.x + size.x / 2, pos.y + size.y / 2);
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(center.x, center.y, 0);
-        guiGraphics.pose().scale(scale, scale, 1.0F);
-        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(rotationAngle));
-        guiGraphics.pose().translate(-center.x, -center.y, 0);
+        guiGraphics.pushPose();
+        guiGraphics.translate(center.x, center.y, 0);
+        guiGraphics.scale(scale, scale, 1.0F);
+        guiGraphics.mulPose(Vector3f.ZP.rotationDegrees(rotationAngle));
+        guiGraphics.translate(-center.x, -center.y, 0);
     }
 
-    public static void pushTransform(GuiGraphics guiGraphics, Vector2 pos, Vector2 size, Vector2 screenSize, float scale, float rotationAngle) {
+    public static void pushTransform(PoseStack guiGraphics, Vector2 pos, Vector2 size, Vector2 screenSize, float scale, float rotationAngle) {
         Vector2 screenCenter = new Vector2(screenSize.x, screenSize.y);
         Vector2 center = new Vector2(pos.x + size.x / 2, pos.y + size.y / 2);
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(screenCenter.x, screenCenter.y, 0);
-        guiGraphics.pose().translate(center.x, center.y, 0);
-        guiGraphics.pose().scale(scale, scale, 1.0F);
-        guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(rotationAngle));
-        guiGraphics.pose().translate(-center.x, -center.y, 0);
-        guiGraphics.pose().translate(-screenCenter.x, -screenCenter.y, 0);
+        guiGraphics.pushPose();
+        guiGraphics.translate(screenCenter.x, screenCenter.y, 0);
+        guiGraphics.translate(center.x, center.y, 0);
+        guiGraphics.scale(scale, scale, 1.0F);
+        guiGraphics.mulPose(Vector3f.ZP.rotationDegrees(rotationAngle));
+        guiGraphics.translate(-center.x, -center.y, 0);
+        guiGraphics.translate(-screenCenter.x, -screenCenter.y, 0);
 
     }
 
-    public static void popTransform(GuiGraphics guiGraphics){
-        guiGraphics.pose().popPose();
+    public static void popTransform(PoseStack guiGraphics){
+        guiGraphics.popPose();
     }
 
-    public static void popRotate(GuiGraphics guiGraphics){
-        guiGraphics.pose().popPose();
+    public static void popRotate(PoseStack guiGraphics){
+        guiGraphics.popPose();
     }
     /**
      * Устанавливает прозрачность
      * @param alpha степень прозрачности
      */
-    public static void setTransparent(GuiGraphics guiGraphics, float alpha){
+    public static void setTransparent(PoseStack guiGraphics, float alpha){
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, alpha);
@@ -592,7 +597,7 @@ public class RenderHelper {
     public static void enableScissor(PoseStack poseStack, double x, double y, double width, double height) {
         var mat = poseStack.last().pose();
         var origin = new Vector4f(0, 0, 0, 1);
-        origin.mulTranspose(mat);
+        origin.transform(mat);
         var window = Minecraft.getInstance().getWindow();
         var scale = window.getGuiScale();
         RenderSystem.enableScissor(
@@ -609,11 +614,11 @@ public class RenderHelper {
 
 
     @Deprecated
-    public static void testBuffer(GuiGraphics graphics, int cX, int cY, int w, int h, RGB rgb){
+    public static void testBuffer(PoseStack graphics, int cX, int cY, int w, int h, RGB rgb){
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-        Matrix4f matrix = graphics.pose().last().pose();
+        Matrix4f matrix = graphics.last().pose();
         bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
         ShapesRenderHelper.drawCircle(matrix,bufferBuilder,new Vector2f(cX,cY),50,12, rgb);
 
@@ -632,7 +637,7 @@ public class RenderHelper {
     }
 
     @Deprecated
-    public static void drawBlock(GuiGraphics graphics, Block block, int x, int y, int scale){
+    public static void drawBlock(PoseStack graphics, Block block, int x, int y, int scale){
         // Получаем текущий Minecraft instance и ItemRenderer
         Minecraft mc = Minecraft.getInstance();
         ItemStack blockStack = new ItemStack(block);
@@ -644,17 +649,17 @@ public class RenderHelper {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         // Настройка матрицы для рендеринга блока
-        graphics.pose().pushPose();
-        graphics.pose().translate(x, y, 100); // Позиция на экране
-        graphics.pose().scale(scale, scale, scale); // Масштабирование блока
+        graphics.pushPose();
+        graphics.translate(x, y, 100); // Позиция на экране
+        graphics.scale(scale, scale, scale); // Масштабирование блока
 
 
-//        graphics.pose().mulPoseMatrix(new Matrix4f(16.0F, 16.0F, 16.0F)); // Корректируем масштабирование для правильного отображения
+//        graphics.mulPoseMatrix(new Matrix4f(16.0F, 16.0F, 16.0F)); // Корректируем масштабирование для правильного отображения
 
 
 
         // Восстанавливаем состояние
-        graphics.pose().popPose();
+        graphics.popPose();
         RenderSystem.disableBlend();
     }
 
@@ -663,15 +668,15 @@ public class RenderHelper {
         return new Vector2d(d.maxX * scale, d.minY * scale);
     }
 
-    public static void drawLivingEntity(GuiGraphics guiGraphics, int x, int y, double scale, double yaw, double pitch, LivingEntity livingEntity) {
-        if (livingEntity.level() == null) return;
-        PoseStack poseStack = guiGraphics.pose();
+    public static void drawLivingEntity(PoseStack guiGraphics, int x, int y, double scale, double yaw, double pitch, LivingEntity livingEntity) {
+        if (livingEntity.level == null) return;
+        PoseStack poseStack = guiGraphics;
         poseStack.pushPose();
         poseStack.translate((float) x, (float) y, 50f);
         poseStack.scale((float) scale, (float) scale, (float) scale);
-        poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+        poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         // Rotate entity
-        poseStack.mulPose(Axis.XP.rotationDegrees(((float) Math.atan((-40 / 40.0F))) * 10.0F));
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(((float) Math.atan((-40 / 40.0F))) * 10.0F));
 
         livingEntity.yBodyRot = (float) -(yaw / 40.F) * 20.0F;
         livingEntity.setYRot((float) -(yaw / 40.F) * 20.0F);
@@ -681,7 +686,7 @@ public class RenderHelper {
 
         poseStack.translate(0.0F, livingEntity.getMyRidingOffset(), 0.0F);
         EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        entityRenderDispatcher.overrideCameraOrientation(new Quaternionf(0.0F, 0.0F, 0.0F, 1.0F));
+        entityRenderDispatcher.overrideCameraOrientation(new Quaternion(0.0F, 0.0F, 0.0F, 1.0F));
         entityRenderDispatcher.setRenderShadow(false);
         final MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
         RenderSystem.runAsFancy(() -> {
@@ -693,7 +698,7 @@ public class RenderHelper {
         poseStack.popPose();
     }
 
-    public static void drawItem(GuiGraphics graphics, ItemStack stack, int hash, boolean renderOverlay, @Nullable String text) {
+    public static void drawItem(PoseStack graphics, ItemStack stack, int hash, boolean renderOverlay, @Nullable String text) {
         if (!stack.isEmpty()) {
             Minecraft mc = Minecraft.getInstance();
             ItemRenderer itemRenderer = mc.getItemRenderer();
@@ -705,7 +710,7 @@ public class RenderHelper {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             PoseStack modelViewStack = RenderSystem.getModelViewStack();
             modelViewStack.pushPose();
-            modelViewStack.mulPoseMatrix(graphics.pose().last().pose());
+            modelViewStack.mulPoseMatrix(graphics.last().pose());
             modelViewStack.scale(1.0F, -1.0F, 1.0F);
             modelViewStack.scale(16.0F, 16.0F, 16.0F);
             RenderSystem.applyModelViewMatrix();
@@ -715,7 +720,7 @@ public class RenderHelper {
                 Lighting.setupForFlatItems();
             }
 
-            itemRenderer.render(stack, ItemDisplayContext.GUI, false, new PoseStack(), bufferSource, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
+            itemRenderer.render(stack, ItemTransforms.TransformType.GUI, false, new PoseStack(), bufferSource, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
             bufferSource.endBatch();
             RenderSystem.enableDepthTest();
             if (flatLight) {
@@ -729,11 +734,11 @@ public class RenderHelper {
                 Font font = mc.font;
                 if (stack.getCount() != 1 || text != null) {
                     String s = text == null ? String.valueOf(stack.getCount()) : text;
-                    graphics.pose().pushPose();
-                    graphics.pose().translate(9.0 - (double)font.width(s), 1.0, 20.0);
-                    font.drawInBatch(s, 0.0F, 0.0F, 16777215, true, graphics.pose().last().pose(), bufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
+                    graphics.pushPose();
+                    graphics.translate(9.0 - (double)font.width(s), 1.0, 20.0);
+                    font.drawInBatch(s, 0.0F, 0.0F, 16777215, true, graphics.last().pose(), bufferSource, true, 0, 15728880);
                     bufferSource.endBatch();
-                    graphics.pose().popPose();
+                    graphics.popPose();
                 }
 
                 if (stack.isBarVisible()) {
@@ -760,10 +765,10 @@ public class RenderHelper {
         }
     }
 
-    private static void draw(GuiGraphics graphics, Tesselator t, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
+    private static void draw(PoseStack graphics, Tesselator t, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
         if (width > 0 && height > 0) {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            Matrix4f m = graphics.pose().last().pose();
+            Matrix4f m = graphics.last().pose();
             BufferBuilder renderer = t.getBuilder();
             renderer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
             renderer.vertex(m, (float)x, (float)y, 0.0F).color(red, green, blue, alpha).endVertex();
@@ -774,7 +779,7 @@ public class RenderHelper {
         }
     }
 
-    public static void drawRoundedRectUp(GuiGraphics guiGraphics, int x, int y, int width, int height, int radius, RGB rgb) {
+    public static void drawRoundedRectUp(PoseStack guiGraphics, int x, int y, int width, int height, int radius, RGB rgb) {
         int r = rgb.r;
         int g = rgb.g;
         int b = rgb.b;
@@ -792,7 +797,7 @@ public class RenderHelper {
         drawArc(guiGraphics, x + width - radius, y + radius, radius, 0, -90, RGBA.create(r,g,b,a)); // Правый верхний угол
     }
 
-    public static void drawRoundedRectDown(GuiGraphics guiGraphics, int x, int y, int width, int height, int radius, RGB rgb) {
+    public static void drawRoundedRectDown(PoseStack guiGraphics, int x, int y, int width, int height, int radius, RGB rgb) {
         int r = rgb.r;
         int g = rgb.g;
         int b = rgb.b;
@@ -811,7 +816,7 @@ public class RenderHelper {
 
     }
 
-    public static void drawRoundedRect(GuiGraphics guiGraphics, int x, int y, int width, int height, int radius, RGB rgb) {
+    public static void drawRoundedRect(PoseStack guiGraphics, int x, int y, int width, int height, int radius, RGB rgb) {
         int r = rgb.r;
         int g = rgb.g;
         int b = rgb.b;
@@ -834,12 +839,12 @@ public class RenderHelper {
         drawArc(guiGraphics, x + width - radius, y + height - radius, radius, 90, 0, RGBA.create(r,g,b,a)); // Правый нижний угол
     }
 
-    public static void fillRect(GuiGraphics guiGraphics, int x, int y, int width, int height, RGB rgb) {
+    public static void fillRect(PoseStack guiGraphics, int x, int y, int width, int height, RGB rgb) {
         // Метод для заполнения прямоугольной области
-        guiGraphics.fill(x, y, x + width, y + height, rgbaToInt(rgb.r, rgb.g, rgb.b, rgb instanceof RGBA ? ((RGBA) rgb).a : 255));
+        GuiComponent.fill(guiGraphics, x, y, x + width, y + height, rgbaToInt(rgb.r, rgb.g, rgb.b, rgb instanceof RGBA ? ((RGBA) rgb).a : 255));
     }
 
-    public static void drawArc(GuiGraphics graphics, int cX, int cY, int radius, int startAngle, int endAngle, RGB rgb) {
+    public static void drawArc(PoseStack graphics, int cX, int cY, int radius, int startAngle, int endAngle, RGB rgb) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
@@ -847,7 +852,7 @@ public class RenderHelper {
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-        Matrix4f m = graphics.pose().last().pose();
+        Matrix4f m = graphics.last().pose();
 
         int r = rgb.r;
         int g = rgb.g;
@@ -871,7 +876,7 @@ public class RenderHelper {
         RenderSystem.disableBlend();
     }
 
-    public static void drawRoundedRectWithOutline(GuiGraphics guiGraphics, int x, int y, int width, int height, int radius, RGB fillColor, RGB outlineColor, int outlineThickness) {
+    public static void drawRoundedRectWithOutline(PoseStack guiGraphics, int x, int y, int width, int height, int radius, RGB fillColor, RGB outlineColor, int outlineThickness) {
         // Сначала рисуем заливку
         drawRoundedRect(guiGraphics, x, y, width, height, radius, fillColor);
 
@@ -879,7 +884,7 @@ public class RenderHelper {
         drawRoundedOutline(guiGraphics, x, y, width, height, radius, outlineColor, outlineThickness);
     }
 
-    public static void drawRoundedOutline(GuiGraphics guiGraphics, int x, int y, int width, int height, int radius, RGB rgb, int thickness) {
+    public static void drawRoundedOutline(PoseStack guiGraphics, int x, int y, int width, int height, int radius, RGB rgb, int thickness) {
         int r = rgb.r;
         int g = rgb.g;
         int b = rgb.b;
@@ -904,20 +909,20 @@ public class RenderHelper {
     }
 
     // Метод для отрисовки линии
-    public static void drawLine(GuiGraphics guiGraphics, int x1, int y1, int x2, int y2, int thickness, RGB rgb) {
+    public static void drawLine(PoseStack guiGraphics, int x1, int y1, int x2, int y2, int thickness, RGB rgb) {
         // Линия рисуется как заполненный прямоугольник шириной thickness
-        guiGraphics.fill(x1, y1, x2, y2 + thickness, rgbaToInt(rgb.r, rgb.g, rgb.b, rgb instanceof RGBA ? ((RGBA) rgb).a : 255));
+        GuiComponent.fill(guiGraphics, x1, y1, x2, y2 + thickness, rgbaToInt(rgb.r, rgb.g, rgb.b, rgb instanceof RGBA ? ((RGBA) rgb).a : 255));
     }
 
 
-    public static void drawArcOutline(GuiGraphics graphics, int cX, int cY, int radius, int startAngle, int endAngle, RGB rgb, int thickness) {
+    public static void drawArcOutline(PoseStack graphics, int cX, int cY, int radius, int startAngle, int endAngle, RGB rgb, int thickness) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-        Matrix4f m = graphics.pose().last().pose();
+        Matrix4f m = graphics.last().pose();
 
         int r = rgb.r;
         int g = rgb.g;
@@ -942,13 +947,13 @@ public class RenderHelper {
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
-    public static void pushScissor(GuiGraphics guiGraphics, Vector2 pos, Vector2 size){
-        guiGraphics.enableScissor(pos.x, pos.y, pos.x + size.x, pos.y + size.y);
-        guiGraphics.pose().pushPose();
+    public static void pushScissor(PoseStack guiGraphics, Vector2 pos, Vector2 size){
+        GuiComponent.enableScissor(pos.x, pos.y, pos.x + size.x, pos.y + size.y);
+        guiGraphics.pushPose();
     }
 
-    public static void popScissor(GuiGraphics guiGraphics){
-        guiGraphics.pose().popPose();
-        guiGraphics.disableScissor();
+    public static void popScissor(PoseStack guiGraphics){
+        guiGraphics.popPose();
+        GuiComponent.disableScissor();
     }
 }

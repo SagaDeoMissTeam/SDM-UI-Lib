@@ -10,7 +10,7 @@ public class QuadVector {
     public Vector2f pos3;
     public Vector2f pos4;
 
-    protected QuadVector(Vector2f pos1, Vector2f pos2, Vector2f pos3, Vector2f pos4) {
+    public QuadVector(Vector2f pos1, Vector2f pos2, Vector2f pos3, Vector2f pos4) {
         this.pos1 = pos1;
         this.pos2 = pos2;
         this.pos3 = pos3;

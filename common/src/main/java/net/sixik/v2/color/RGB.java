@@ -2,25 +2,15 @@ package net.sixik.v2.color;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.renderer.GameRenderer;
-import net.sixik.sdmuilib.client.render.api.ISDMAdditionRender;
-import net.sixik.sdmuilib.client.render.api.ISDMRender;
 import net.sixik.v2.interfaces.IElementRender;
 import net.sixik.v2.render.RenderHelper;
 import net.sixik.v2.render.ShapesRenderHelper;
 import net.sixik.v2.utils.math.Vector2f;
-import org.joml.Matrix4f;
 
 
-/**
- * Represents an RGB color with additional methods for rendering and color manipulation.
- * Implements the {@link ISDMRender} and {@link ISDMAdditionRender} interfaces for rendering support.
- */
 public class RGB implements IElementRender {
 
     public int r;
@@ -148,7 +138,7 @@ public class RGB implements IElementRender {
      * @param height The height of the rectangle.
      */
     @Override
-    public void draw(GuiGraphics graphics, int x, int y, int width, int height) {
+    public void draw(PoseStack graphics, int x, int y, int width, int height) {
         if (width > 0 && height > 0) {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -173,7 +163,7 @@ public class RGB implements IElementRender {
      * @param lineWidth The width of the line.
      */
     @Override
-    public void drawLine(GuiGraphics graphics, int x, int y, int x2, int y2, float lineWidth) {
+    public void drawLine(PoseStack graphics, int x, int y, int x2, int y2, float lineWidth) {
 //        RenderSystem.setShader(GameRenderer::getPositionColorShader);
 //        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 //        RenderSystem.enableBlend();
@@ -192,14 +182,14 @@ public class RGB implements IElementRender {
      */
 
     @Override
-    public void drawCircle(GuiGraphics graphics, int x, int y, int radius, int segments) {
+    public void drawCircle(PoseStack graphics, int x, int y, int radius, int segments) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-        Matrix4f matrix = graphics.pose().last().pose();
+        Matrix4f matrix = graphics.last().pose();
         bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
         ShapesRenderHelper.drawCircle(matrix,bufferBuilder,new Vector2f(x,y),radius,segments, this);
         tesselator.end();
@@ -207,7 +197,7 @@ public class RGB implements IElementRender {
     }
 
     @Override
-    public void drawTriangle(GuiGraphics graphics, int x, int y, int w, int h) {
+    public void drawTriangle(PoseStack graphics, int x, int y, int w, int h) {
          if (w > 0 && h > 0) {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -222,7 +212,7 @@ public class RGB implements IElementRender {
     }
 
     @Override
-    public void drawRoundFill(GuiGraphics guiGraphics, int x, int y, int width, int height, int radius) {
+    public void drawRoundFill(PoseStack guiGraphics, int x, int y, int width, int height, int radius) {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();

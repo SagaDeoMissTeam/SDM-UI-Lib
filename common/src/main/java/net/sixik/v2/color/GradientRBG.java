@@ -2,11 +2,7 @@ package net.sixik.v2.color;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.GameRenderer;
 import net.sixik.v2.render.RenderHelper;
 
@@ -52,7 +48,7 @@ public class GradientRBG extends RGB {
     /**
      * Draws a gradient rectangle using the provided start and end colors.
      *
-     * @param graphics The GuiGraphics object used for drawing.
+     * @param graphics The PoseStack object used for drawing.
      * @param x The x-coordinate of the top-left corner of the rectangle.
      * @param y The y-coordinate of the top-left corner of the rectangle.
      * @param width The width of the rectangle.
@@ -60,7 +56,7 @@ public class GradientRBG extends RGB {
      * @param tick The current game tick.
      */
     @Override
-    public void draw(GuiGraphics graphics, int x, int y, int width, int height) {
+    public void draw(PoseStack graphics, int x, int y, int width, int height) {
         if(width > 0 && height > 0){
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -75,7 +71,7 @@ public class GradientRBG extends RGB {
     }
 
     @Override
-    public void drawTriangle(GuiGraphics graphics, int x, int y, int w, int h) {
+    public void drawTriangle(PoseStack graphics, int x, int y, int w, int h) {
         if(w > 0 && h > 0) {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

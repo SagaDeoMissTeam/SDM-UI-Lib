@@ -4,25 +4,24 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 public class ItemRenderHelper {
 
-    public static void drawItem(GuiGraphics graphics, ItemStack stack, int hash, boolean renderOverlay, @Nullable String text) {
+    public static void drawItem(PoseStack graphics, ItemStack stack, int hash, boolean renderOverlay, @Nullable String text) {
         if (!stack.isEmpty()) {
             Minecraft mc = Minecraft.getInstance();
             ItemRenderer itemRenderer = mc.getItemRenderer();
@@ -34,7 +33,7 @@ public class ItemRenderHelper {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             PoseStack modelViewStack = RenderSystem.getModelViewStack();
             modelViewStack.pushPose();
-            modelViewStack.mulPoseMatrix(graphics.pose().last().pose());
+            modelViewStack.mulPoseMatrix(graphics.last().pose());
             modelViewStack.scale(1.0F, -1.0F, 1.0F);
             modelViewStack.scale(16.0F, 16.0F, 16.0F);
             RenderSystem.applyModelViewMatrix();
@@ -44,7 +43,7 @@ public class ItemRenderHelper {
                 Lighting.setupForFlatItems();
             }
 
-            itemRenderer.render(stack, ItemDisplayContext.GUI, false, new PoseStack(), bufferSource, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
+            itemRenderer.render(stack, ItemTransforms.TransformType.GUI, false, new PoseStack(), bufferSource, 15728880, OverlayTexture.NO_OVERLAY, bakedModel);
             bufferSource.endBatch();
             RenderSystem.enableDepthTest();
             if (flatLight) {
@@ -58,11 +57,11 @@ public class ItemRenderHelper {
                 Font font = mc.font;
                 if (stack.getCount() != 1 || text != null) {
                     String s = text == null ? String.valueOf(stack.getCount()) : text;
-                    graphics.pose().pushPose();
-                    graphics.pose().translate(9.0 - (double)font.width(s), 1.0, 20.0);
-                    font.drawInBatch(s, 0.0F, 0.0F, 16777215, true, graphics.pose().last().pose(), bufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
+                    graphics.pushPose();
+                    graphics.translate(9.0 - (double)font.width(s), 1.0, 20.0);
+                    font.drawInBatch(s, 0.0F, 0.0F, 16777215, true, graphics.last().pose(), bufferSource, true, 0, 15728880);
                     bufferSource.endBatch();
-                    graphics.pose().popPose();
+                    graphics.popPose();
                 }
 
                 if (stack.isBarVisible()) {
@@ -90,10 +89,10 @@ public class ItemRenderHelper {
         }
     }
 
-    private static void draw(GuiGraphics graphics, Tesselator t, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
+    private static void draw(PoseStack graphics, Tesselator t, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
         if (width > 0 && height > 0) {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            Matrix4f m = graphics.pose().last().pose();
+            Matrix4f m = graphics.last().pose();
             BufferBuilder renderer = t.getBuilder();
             renderer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
             renderer.vertex(m, (float)x, (float)y, 0.0F).color(red, green, blue, alpha).endVertex();

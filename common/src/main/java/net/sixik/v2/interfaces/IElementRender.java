@@ -1,16 +1,16 @@
 package net.sixik.v2.interfaces;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 public interface IElementRender {
 
-    void draw(GuiGraphics graphics, int x, int y, int width, int height);
+    void draw(PoseStack graphics, int x, int y, int width, int height);
 
-    void drawLine(GuiGraphics graphics, int x, int y, int x2, int y2, float lineWidth);
+    void drawLine(PoseStack graphics, int x, int y, int x2, int y2, float lineWidth);
 
-    void drawCircle(GuiGraphics graphics, int x, int y, int radius, int segments);
+    void drawCircle(PoseStack graphics, int x, int y, int radius, int segments);
 
-    void drawTriangle(GuiGraphics graphics, int x, int y, int w, int h);
+    void drawTriangle(PoseStack graphics, int x, int y, int w, int h);
 
-    void drawRoundFill(GuiGraphics guiGraphics, int x, int y, int width, int height, int radius);
+    void drawRoundFill(PoseStack guiGraphics, int x, int y, int width, int height, int radius);
 }
