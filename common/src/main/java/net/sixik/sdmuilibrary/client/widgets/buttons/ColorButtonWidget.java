@@ -38,7 +38,7 @@ public class ColorButtonWidget extends SDMWidget {
     @Override
     public void draw(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY, float tick) {
         if(selectedColor == null) return;
-        selectedColor.draw(graphics, x, y, width, height, tick);
+        selectedColor.draw(graphics, x, y, width, height);
     }
 
 

@@ -29,9 +29,9 @@ public abstract class BaseTooltipButton extends BasicButtonWidget{
 
     public abstract void drawBackground(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY, float tick);
 
-    public void drawTooltip(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY, float tick){
+    public void drawTooltip(GuiGraphics graphics, int x, int y, int width, int height, int mouseX){
         RenderHelper.pushUpper(graphics, 900f);
-        Colors.POLAR_NIGHT_2.draw(graphics, x, y, width, height, mouseX);
+        Colors.POLAR_NIGHT_2.draw(graphics, x, y, width, height);
 
         RenderHelper.popUpper(graphics);
     }

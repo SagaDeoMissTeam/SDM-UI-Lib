@@ -3,9 +3,9 @@ package net.sixik.sdmuilibrary.client.widgets.list;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import net.sixik.sdmuilibrary.client.utils.GLHelper;
+import net.sixik.sdmuilibrary.client.utils.renders.GLRenderHelper;
 import net.sixik.sdmuilibrary.client.utils.RenderHelper;
-import net.sixik.sdmuilibrary.client.utils.TextHelper;
+import net.sixik.sdmuilibrary.client.utils.renders.TextRenderHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2d;
 import net.sixik.sdmuilibrary.client.utils.misc.Colors;
@@ -72,27 +72,28 @@ public class BaseDropDownListWidget<T> extends BasicButtonWidget {
     @Override
     public void draw(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY, float tick) {
 
-        Colors.POLAR_NIGHT_0.draw(graphics, x, y, size.x, sizeOfTextField, tick);
+        Colors.POLAR_NIGHT_0.draw(graphics, x, y, size.x, sizeOfTextField);
         String line = toNameFunc.apply(value).getString();
-        TextHelper.drawTextOverWight(graphics, line, new Vector2(x + 1, y + 1), width - 1);
-        drawList(graphics, x, y + sizeOfTextField, size.x, size.y, mouseX, mouseY, tick);
+        TextRenderHelper.drawTextOverWight(graphics, line, new Vector2(x + 1, y + 1), width - 1);
+        drawList(graphics, x, y + sizeOfTextField, size.x, size.y, mouseX, mouseY);
 
     }
 
-    public void drawList(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY, float tick){
+    public void drawList(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY){
         if(opened){
-            GLHelper.pushScissor(graphics, new Vector2(x, y), new Vector2(width, sizeOfTextField * maxDisplayed));
+            GLRenderHelper.enableScissor(graphics, new Vector2(x, y), new Vector2(width, sizeOfTextField * maxDisplayed));
             for (int i = 0; i < maxDisplayed; i++) {
-                drawContent(graphics, x, y, width, sizeOfTextField, mouseX, mouseY, tick, i);
+                drawContent(graphics, x, y, width, sizeOfTextField, mouseX, mouseY, i);
                 y += sizeOfTextField;
             }
-            GLHelper.popScissor(graphics);
+
+            GLRenderHelper.disableScissor(graphics);
 
         }
     }
 
-    public void drawContent(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY, float tick, int num){
-        Colors.POLAR_NIGHT_1.draw(graphics, x, y, width, height, tick);
+    public void drawContent(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY,  int num){
+        Colors.POLAR_NIGHT_1.draw(graphics, x, y, width, height);
 
 
         if(RenderHelper.isMouseOver(
@@ -100,12 +101,12 @@ public class BaseDropDownListWidget<T> extends BasicButtonWidget {
                 Vector2.of(x,y),
                 Vector2.of(width, height)
         ))
-            Colors.POLAR_NIGHT_2.draw(graphics, x, y, width, height, tick);
+            Colors.POLAR_NIGHT_2.draw(graphics, x, y, width, height);
 
         y += 1;
         x += 1;
         String line = toNameFunc.apply(possibleValues.get(num + scroll)).getString();
-        TextHelper.drawTextOverWight(graphics, line, new Vector2(x,y), width - 1);
+        TextRenderHelper.drawTextOverWight(graphics, line, new Vector2(x,y), width - 1);
     }
 
     public BaseDropDownListWidget<T> setToNameFunc(Function<T, Component> function) {

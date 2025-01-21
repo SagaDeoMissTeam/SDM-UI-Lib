@@ -57,10 +57,9 @@ public class GradientRBG extends RGB{
      * @param y The y-coordinate of the top-left corner of the rectangle.
      * @param width The width of the rectangle.
      * @param height The height of the rectangle.
-     * @param tick The current game tick.
      */
     @Override
-    public void draw(GuiGraphics graphics, int x, int y, int width, int height, float tick) {
+    public void draw(GuiGraphics graphics, int x, int y, int width, int height) {
         if(width > 0 && height > 0){
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

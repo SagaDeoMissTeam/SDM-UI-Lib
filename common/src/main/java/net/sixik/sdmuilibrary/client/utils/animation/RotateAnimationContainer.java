@@ -2,7 +2,7 @@ package net.sixik.sdmuilibrary.client.utils.animation;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.sixik.sdmuilibrary.client.render.api.ISDMRender;
-import net.sixik.sdmuilibrary.client.utils.GLHelper;
+import net.sixik.sdmuilibrary.client.utils.renders.GLRenderHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.AnimationContainer;
 import net.sixik.sdmuilibrary.client.widgets.SDMWidget;
@@ -50,24 +50,22 @@ public class RotateAnimationContainer implements AnimationContainer {
             switch (getType()){
                 case ALL_OBJECT -> {
                     if(widget instanceof SDMWidget sdmWidget){
-                        GLHelper.pushTransform(
+                        GLRenderHelper.setTransform(
                                 graphics,
                                 new Vector2(sdmWidget.getX(), sdmWidget.getY()),
-                                new Vector2(sdmWidget.getWidth(), sdmWidget.getHeight()),
                                 1f,
                                 rotation
                         );
                     } else {
-                        GLHelper.pushTransform(
+                        GLRenderHelper.setTransform(
                                 graphics,
                                 new Vector2(x, y),
-                                new Vector2(width, height),
                                 1f,
                                 rotation
                         );
                     }
 
-                    GLHelper.popTransform(graphics);
+                   graphics.pose().popPose();
                 }
                 case CUSTOM -> {
                     customAnimation(widget, graphics, x,y,width,height,rotation);

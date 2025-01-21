@@ -10,7 +10,7 @@ public class FillingProgressBarWidget extends BasicProgressBarWidget{
 
     @Override
     public void draw(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY, float tick) {
-        backgroundColor.draw(graphics, x, y, width, height, tick);
-        fillColor.draw(graphics, x, y, getFilling(), height, tick);
+        backgroundColor.draw(graphics, x, y, width, height);
+        fillColor.draw(graphics, x, y, getFilling(), height);
     }
 }

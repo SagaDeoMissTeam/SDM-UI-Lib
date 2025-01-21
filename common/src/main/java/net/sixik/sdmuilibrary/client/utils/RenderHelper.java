@@ -31,6 +31,7 @@ import net.sixik.sdmuilibrary.client.utils.math.Vector2f;
 import net.sixik.sdmuilibrary.client.utils.misc.CenterOperators;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 import net.sixik.sdmuilibrary.client.utils.misc.RGBA;
+import net.sixik.sdmuilibrary.client.utils.renders.ShapesRenderHelper;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -62,14 +63,14 @@ public class RenderHelper {
         return new Vector2(getScreenSize().x / 2, getScreenSize().y / 2);
     }
 
-    public static Vector2 getScreenCenter(CenterOperators.Type centerType, CenterOperators.Method method){
-        return GLHelper.getCenterWithPos(new Vector2(0,0), getScreenSize(), centerType, method);
-    }
+   //public static Vector2 getScreenCenter(CenterOperators.Type centerType, CenterOperators.Method method){
+   //    return GLRenderHelper.getCenterWithPos(new Vector2(0,0), getScreenSize(), centerType, method);
+   //}
 
-    public static Vector2 getScreenCenterWithSize(Vector2 size, CenterOperators.Type centerType, CenterOperators.Method method){
-        Vector2 p = GLHelper.getCenterWithPos(new Vector2(0,0), getScreenSize(), centerType, method);;
-        return p.add(new Vector2(size.x / 2, size.y / 2));
-    }
+   //public static Vector2 getScreenCenterWithSize(Vector2 size, CenterOperators.Type centerType, CenterOperators.Method method){
+   //    Vector2 p = GLRenderHelper.getCenterWithPos(new Vector2(0,0), getScreenSize(), centerType, method);;
+   //    return p.add(new Vector2(size.x / 2, size.y / 2));
+   //}
 
     public static Vector2f getMousePosition(){
         return new Vector2f((float) Minecraft.getInstance().mouseHandler.xpos(), (float) Minecraft.getInstance().mouseHandler.ypos());
@@ -347,7 +348,7 @@ public class RenderHelper {
             BufferUploader.drawWithShader(buffer.buildOrThrow());
 //            tesselator.end();
         } else {
-            col.draw(graphics, x, y, w, h, 0);
+            col.draw(graphics, x, y, w, h);
         }
     }
 
@@ -594,7 +595,7 @@ public class RenderHelper {
 
         Tesselator tesselator = Tesselator.getInstance();
         Matrix4f matrix = graphics.pose().last().pose();
-        ShapesRender.drawCircle(matrix,new Vector2f(cX,cY),50,12, rgb);
+        ShapesRenderHelper.drawCircle(matrix,new Vector2f(cX,cY),50,12, rgb);
 
 //        tesselator.end();
 

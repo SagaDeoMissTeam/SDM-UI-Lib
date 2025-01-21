@@ -1,143 +1,116 @@
 package net.sixik.sdmuilibrary.client.utils.misc;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.SimpleTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
-import net.sixik.sdmuilibrary.client.render.api.ISDMRender;
-import net.sixik.sdmuilibrary.client.utils.RenderHelper;
-import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.renders.TextureRenderHelper;
+import org.joml.Matrix4f;
 
-/**
- * Represents a texture object that can be rendered using the ISDMRender interface.
- * This class provides methods to create texture objects with different configurations.
- */
-public class Texture implements ISDMRender {
+public class Texture extends RGBA{
 
     public ImageType imageType = ImageType.NORMAL;
     public int sliceSize = 10;
 
-    /**
-     * The resource location of the texture.
-     */
-    public ResourceLocation texture;
+    public ResourceLocation textureID;
+    public double tileSize;
+    public float minU;
+    public float minV;
+    public float maxU;
+    public float maxV;
 
-    /**
-     * The size of the texture when rendering. If null, the texture will be rendered using the provided width and height.
-     */
-    public Vector2 size = null;
-
-    /**
-     * The UV coordinates of the texture.
-     */
-    public Vector2 uv;
-
-    /**
-     * The size of the texture in the texture atlas.
-     */
-    public Vector2 textureSize;
-
-    /**
-     * Constructor for creating a texture object with a specific size.
-     *
-     * @param texture The resource location of the texture.
-     * @param size The size of the texture when rendering.
-     * @param UV The UV coordinates of the texture.
-     * @param textureSize The size of the texture in the texture atlas.
-     */
-    protected Texture(ResourceLocation texture, Vector2 size, Vector2 UV, Vector2 textureSize){
-        this.texture = texture;
-        this.size = size;
-        this.uv = UV;
-        this.textureSize = textureSize;
-    }
-
-    /**
-     * Constructor for creating a texture object with default size.
-     *
-     * @param texture The resource location of the texture.
-     * @param UV The UV coordinates of the texture.
-     * @param textureSize The size of the texture in the texture atlas.
-     */
-    protected Texture(ResourceLocation texture, Vector2 UV, Vector2 textureSize){
-        this.texture = texture;
-        this.uv = UV;
-        this.textureSize = textureSize;
-    }
-
-    public Texture setImageType(ImageType imageType, int sliceSize) {
+    protected Texture(ResourceLocation textureID, ImageType imageType, int sliceSize) {
+        this(textureID);
         this.imageType = imageType;
         this.sliceSize = sliceSize;
+    }
+
+    protected Texture(ResourceLocation textureID) {
+        super(255,255,255, 255);
+        this.textureID = textureID;
+        this.minU = 0.0F;
+        this.minV = 0.0F;
+        this.maxU = 1.0F;
+        this.maxV = 1.0F;
+        this.tileSize = 0.0;
+    }
+
+    public static Texture create(ResourceLocation textureID){
+        return new Texture(textureID);
+    }
+
+    @Override
+    public Texture copy() {
+        return new Texture(textureID, imageType, sliceSize).withColor(RGBA.create(r,g,b,a)).withUV(minU, minV, maxU, maxV);
+    }
+
+    public Texture setSliced(int sliceSize) {
+        this.sliceSize = sliceSize;
+        this.imageType = ImageType.SLICED;
         return this;
     }
 
-    /**
-     * Static method to create a texture object with a specific size.
-     *
-     * @param texture The resource location of the texture.
-     * @param size The size of the texture when rendering.
-     * @param uv The UV coordinates of the texture.
-     * @param textureSize The size of the texture in the texture atlas.
-     * @return A new Texture object with the specified parameters.
-     */
-    public static Texture create(ResourceLocation texture, Vector2 size, Vector2 uv, Vector2 textureSize){
-        return new Texture(texture, size, uv, textureSize);
+    public Texture withColor(RGBA setColor) {
+        this.r = setColor.r;
+        this.g = setColor.g;
+        this.b = setColor.b;
+        this.a = setColor.a;
+        return this;
     }
 
-    /**
-     * Static method to create a texture object with default size.
-     *
-     * @param texture The resource location of the texture.
-     * @param uv The UV coordinates of the texture.
-     * @param textureSize The size of the texture in the texture atlas.
-     * @return A new Texture object with the specified parameters.
-     */
-    public static Texture create(ResourceLocation texture, Vector2 uv, Vector2 textureSize){
-        return new Texture(texture, uv, textureSize);
+    public Texture withUV(float minU, float minV, float maxU, float maxV) {
+        this.minU = minU;
+        this.minV = minV;
+        this.maxU = maxU;
+        this.maxV = maxV;
+        return this;
     }
 
-    public static Texture createAutoTextureSize(ResourceLocation texture, Vector2 size, Vector2 uv){
-        return new Texture(texture, size, uv, TextureRenderHelper.getTextureSize(texture));
+    public void setupTexture() {
+        TextureManager manager = Minecraft.getInstance().getTextureManager();
+        AbstractTexture tex = manager.getTexture(this.textureID);
+        if (tex == null) {
+            tex = new SimpleTexture(this.textureID);
+            manager.getTexture(this.textureID, (AbstractTexture)tex);
+        }
+
+        RenderSystem.setShaderTexture(0, ((AbstractTexture)tex).getId());
     }
 
-    public static Texture createAutoTextureSize(ResourceLocation texture, Vector2 size){
-        return new Texture(texture, size, new Vector2(0,0), TextureRenderHelper.getTextureSize(texture));
-    }
-
-    /**
-     * Renders the texture using the provided graphics context.
-     *
-     * @param graphics The graphics context to render the texture.
-     * @param x The x-coordinate of the top-left corner of the texture.
-     * @param y The y-coordinate of the top-left corner of the texture.
-     * @param width The width of the texture when rendering.
-     * @param height The height of the texture when rendering.
-     * @param tick The current tick count.
-     */
     @Override
-    public void draw(GuiGraphics graphics, int x, int y, int width, int height, float tick) {
-        render(graphics, x, y, width, height, tick);
-    }
-
-    protected void render(GuiGraphics graphics, int x, int y, int width, int height, float tick){
+    public void draw(GuiGraphics graphics, int x, int y, int w, int h) {
+        this.setupTexture();
         switch (imageType) {
             case NORMAL -> {
-                if(size == null)
-                    RenderHelper.renderTexture(graphics, this.texture.toString(), x,y,width,height, uv.x, uv.y, textureSize.x, textureSize.y);
-                else
-                    RenderHelper.renderTexture(graphics, this.texture.toString(), x,y,size.x,size.y, uv.x, uv.y, textureSize.x, textureSize.y);
+                if (tileSize <= 0) {
+                    TextureRenderHelper.renderTextureRect(graphics, x, y, w, h, this, this.minU, this.minV, this.maxU, this.maxV);
+                } else {
+                    int r = this.r;
+                    int g = this.g;
+                    int b = this.b;
+                    int a = this.a;
+                    Matrix4f m = graphics.pose().last().pose();
+                    Tesselator tesselator = Tesselator.getInstance();
+                    RenderSystem.setShader(GameRenderer::getPositionColorShader);
+                    RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+                    BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
+                    buffer.addVertex(m, (float) x, (float) (y + h), 0.0F).setColor(r, g, b, a).setUv((float) ((double) x / this.tileSize), (float) ((double) (y + h) / this.tileSize));
+                    buffer.addVertex(m, (float) (x + w), (float) (y + h), 0.0F).setColor(r, g, b, a).setUv((float) ((double) (x + w) / this.tileSize), (float) ((double) (y + h) / this.tileSize));
+                    buffer.addVertex(m, (float) (x + w), (float) y, 0.0F).setColor(r, g, b, a).setUv((float) ((double) (x + w) / this.tileSize), (float) ((double) y / this.tileSize));
+                    buffer.addVertex(m, (float) x, (float) y, 0.0F).setColor(r, g, b, a).setUv((float) ((double) x / this.tileSize), (float) ((double) y / this.tileSize));
+                    BufferUploader.drawWithShader(buffer.buildOrThrow());
+
+                    RenderSystem.disableBlend();
+                }
             }
-            case SLICED -> {
-                if(size == null)
-                    TextureRenderHelper.renderSlicedTexture(graphics, this.texture, x,y,width,height, 10, textureSize.x, textureSize.y);
-                else
-                    TextureRenderHelper.renderSlicedTexture(graphics, this.texture, x,y,size.x,size.y, 10, textureSize.x, textureSize.y);
-            }
+            case SLICED -> TextureRenderHelper.renderSlicedTextureRect(graphics, x,y,w,h, 10, (int) tileSize, (int) tileSize);
         }
     }
 
-
-    public enum ImageType {
-        SLICED,
-        NORMAL
-    }
 }

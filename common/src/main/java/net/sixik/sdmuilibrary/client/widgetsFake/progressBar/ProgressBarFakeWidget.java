@@ -41,7 +41,7 @@ public class ProgressBarFakeWidget extends SDMFakeWidget {
 
     @Override
     public void draw(GuiGraphics graphics) {
-        backgroundColor.draw(graphics, position.x, position.y, size.x, size.y, 0);
-        backgroundColor.draw(graphics, position.x + 1, position.y + 1, getFilling() - 2, size.y - 2, 0);
+        backgroundColor.draw(graphics, position.x, position.y, size.x, size.y);
+        backgroundColor.draw(graphics, position.x + 1, position.y + 1, getFilling() - 2, size.y - 2);
     }
 }

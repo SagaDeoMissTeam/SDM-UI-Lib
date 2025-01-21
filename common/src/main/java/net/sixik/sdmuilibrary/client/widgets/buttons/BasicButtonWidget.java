@@ -41,7 +41,7 @@ public abstract class BasicButtonWidget extends SDMWidget {
     }
 
     public void drawBackground(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY, float tick) {
-        Colors.POLAR_NIGHT_0.draw(graphics, x, y, width, height, tick);
+        Colors.POLAR_NIGHT_0.draw(graphics, x, y, width, height);
         RenderHelper.drawHollowRect(graphics, x, y, width, height, Colors.POLAR_NIGHT_1, false);
     }
 

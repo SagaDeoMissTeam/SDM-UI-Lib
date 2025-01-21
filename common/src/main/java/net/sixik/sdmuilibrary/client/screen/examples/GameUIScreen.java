@@ -4,7 +4,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.sixik.sdmuilibrary.client.screen.BaseScreen;
 import net.sixik.sdmuilibrary.client.utils.RenderHelper;
-import net.sixik.sdmuilibrary.client.utils.TextHelper;
+import net.sixik.sdmuilibrary.client.utils.renders.TextRenderHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.misc.CenterOperators;
 import net.sixik.sdmuilibrary.client.utils.misc.Colors;
@@ -80,7 +80,7 @@ public class GameUIScreen extends BaseScreen {
 
 
     public void drawBackground(GuiGraphics graphics, int mouseX, int mouseY,float partialTicks){
-        Colors.POLAR_NIGHT_0.draw(graphics, position.x, position.y, size.x, size.y, partialTicks);
+        Colors.POLAR_NIGHT_0.draw(graphics, position.x, position.y, size.x, size.y);
         RenderHelper.drawHollowRect(graphics, position.x - 1, position.y - 1, size.x + 2, size.y + 2, Colors.POLAR_NIGHT_1, false);
         drawPage(graphics, mouseX, mouseY, partialTicks);
     }
@@ -90,11 +90,11 @@ public class GameUIScreen extends BaseScreen {
 
         if(selectedTab == 0){
             int _sizeXMax = size.x - (size.x / 6 * 2);
-            Colors.POLAR_NIGHT_4.draw(graphics, (pos.x + size.x) - _sizeXMax, pos.y - 10, _sizeXMax, size.y, partialTicks);
+            Colors.POLAR_NIGHT_4.draw(graphics, (pos.x + size.x) - _sizeXMax, pos.y - 10, _sizeXMax, size.y);
             if(selectedButtonOnPage != -1){
                 pos = new Vector2((pos.x + size.x) - _sizeXMax, pos.y).add(new Vector2(5, 5));
                 String text = list.get(selectedButtonOnPage);
-                TextHelper.drawText(graphics, text, pos.x,pos.y);
+                TextRenderHelper.drawText(graphics, text, pos.x,pos.y);
             }
 //            TextHelper.drawText(graphics, "Тестовое сообщение", pos.x ,pos.y);
         }
@@ -138,10 +138,10 @@ public class GameUIScreen extends BaseScreen {
                     @Override
                     public void drawBackground(GuiGraphics graphics, int x, int y, int width, int height, int mouseX, int mouseY, float tick) {
                         if(selectedButtonOnPage != -1 && selectedButtonOnPage == d1) {
-                            Colors.UI_GOLD_1.draw(graphics, x, y, width, height, tick);
+                            Colors.UI_GOLD_1.draw(graphics, x, y, width, height);
                         }
                         else
-                            Colors.UI_GOLD_0.draw(graphics, x, y, width, height, tick);
+                            Colors.UI_GOLD_0.draw(graphics, x, y, width, height);
                     }
                 }
             );

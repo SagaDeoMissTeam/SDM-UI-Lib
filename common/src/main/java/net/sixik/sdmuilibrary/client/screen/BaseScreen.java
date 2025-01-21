@@ -5,7 +5,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.sixik.sdmuilibrary.client.utils.GLHelper;
+import net.sixik.sdmuilibrary.client.utils.renders.GLRenderHelper;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.widgets.RenderWidget;
 import net.sixik.sdmuilibrary.client.widgets.SDMWidget;
@@ -27,9 +27,9 @@ public class BaseScreen extends Screen {
         for(Renderable renderable : ((ScreenAccessor)this).getRenderables()) {
             if(renderable instanceof RenderWidget renderWiget) {
                 if(renderWiget.scissor) {
-                       GLHelper  .pushScissor(graphics, position, size);
+                       GLRenderHelper.enableScissor(graphics, position, size);
                        renderable.render     (graphics, mouseX, mouseY, partialTicks);
-                       GLHelper  .popScissor (graphics);
+                       GLRenderHelper.disableScissor(graphics);
                 } else renderable.render     (graphics, mouseX, mouseY, partialTicks);
             } else
                 renderable.render(graphics, mouseX, mouseY, partialTicks);

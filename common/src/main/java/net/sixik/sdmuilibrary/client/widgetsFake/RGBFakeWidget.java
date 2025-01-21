@@ -13,6 +13,6 @@ public class RGBFakeWidget extends SDMFakeWidget{
 
     @Override
     public void draw(GuiGraphics graphics) {
-        rgb.draw(graphics, position.x, position.y, size.x, size.y, 0);
+        rgb.draw(graphics, position.x, position.y, size.x, size.y);
     }
 }
