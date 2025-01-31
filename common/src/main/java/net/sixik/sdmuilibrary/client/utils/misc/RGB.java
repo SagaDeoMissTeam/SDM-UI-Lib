@@ -85,11 +85,27 @@ public class RGB implements IShapesRender, ILineRender {
     }
 
     @Override
-    public void drawLine(GuiGraphics graphics, int x, int y, int x2, int y2, float lineWidth) {
-        throw new UnsupportedOperationException("Method does not support drawing line");
+    public void drawStraight(GuiGraphics graphics, int x, int y, LineVectors vectors, float lineLong, float lineWidth) {
+        //throw new UnsupportedOperationException("Method does not support drawing line");
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.enableBlend();
 
-        //TODO: Сделать рендер линий
+        ShapesRenderHelper.drawStraight(graphics.pose().last().pose(), new Vector2(x,y), vectors,lineLong, lineWidth,this);
 
+        RenderSystem.disableBlend();
+    }
+
+    @Override
+    public void drawMagneticLine(GuiGraphics graphics, int x, int y, LineVectors magnet1, int x2, int y2, LineVectors magnet2, float lineWidth) {
+        //throw new UnsupportedOperationException("Method does not support drawing line");
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.enableBlend();
+
+        ShapesRenderHelper.drawMagneticLine(graphics.pose().last().pose(), new Vector2(x,y),magnet1, new Vector2(x2, y2), magnet2, lineWidth,this);
+
+        RenderSystem.disableBlend();
     }
 
     @Override

@@ -17,7 +17,7 @@ public class BaseScreen extends Screen {
     public Vector2 size = new Vector2(0,0);;
     public Vector2 position = new Vector2(0,0);;
 
-    protected BaseScreen() {
+    public BaseScreen() {
         super(Component.empty());
     }
 

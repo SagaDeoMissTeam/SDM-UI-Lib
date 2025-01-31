@@ -249,35 +249,6 @@ public class RenderHelper {
         }
     }
 
-    public static void drawLine(GuiGraphics graphics, RGB rgb) {
-//        Tesselator tesselator = Tesselator.getInstance();
-//        BufferBuilder bufferBuilder = tesselator.getBuilder();
-//        Matrix4f m = graphics.pose().last().pose();
-//
-//        int r = rgb.r;
-//        int g = rgb.g;
-//        int b = rgb.b;
-//        int a = 255;
-//        if (rgb instanceof RGBA rgba)
-//            a = rgba.a;
-//
-//        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-//        RenderSystem.setShaderColor(1f,1f,1f,1f);
-//        RenderSystem.enableBlend();
-//        RenderSystem.defaultBlendFunc();
-//
-//        RenderSystem.lineWidth(5f);
-//
-//        bufferBuilder.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR);
-//
-//        bufferBuilder.addVertex(m,20, 20, 0).setColor(r, g, b, a);
-//        bufferBuilder.addVertex(m,10,10, 0).setColor(r, g, b, a);
-//
-//        RenderSystem.lineWidth(1f);
-//
-//        tesselator.end();
-//        RenderSystem.disableBlend();
-    }
 
     public static void drawFillArc(GuiGraphics graphics, int cX, int cY, int radius, int start, int end, RGB rgb) {
         Tesselator tesselator = Tesselator.getInstance();
@@ -797,7 +768,8 @@ public class RenderHelper {
 
         // Отрисовка центрального прямоугольника (без углов)
         fillRect(guiGraphics, x + radius, y, width - radius * 2, height, rgb); // Верхняя и нижняя части
-        fillRect(guiGraphics, x, y + radius, width, height - radius * 2, rgb); // Левая и правая части
+        fillRect(guiGraphics, x , y + radius, radius, height - radius * 2, rgb); // Левая часть
+        fillRect(guiGraphics, x + width - radius , y + radius, radius, height - radius * 2, rgb); // Правая часть
 
         // Отрисовка закругленных углов (дуги)
         drawArc(guiGraphics, x + radius,   y + radius, radius, 270, 180, rgb); // Левый верхний угол
@@ -823,7 +795,7 @@ public class RenderHelper {
         if (rgb instanceof RGBA rgba) {
             a = rgba.a;
         }
-
+        RenderSystem.enableBlend();
         bufferBuilder.addVertex(m, cX, cY, 0).setColor(r, g, b, a); // Центр дуги
 
         for (int i = startAngle; i >= endAngle; i -= 5) {
@@ -836,6 +808,7 @@ public class RenderHelper {
 //        tesselator.end();
 
         BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
+        RenderSystem.disableBlend();
     }
 
     public static int rgbaToInt(int r, int g, int b, int a) {

@@ -7,6 +7,7 @@ import net.sixik.sdmuilibrary.client.utils.math.QuadVector;
 import net.sixik.sdmuilibrary.client.utils.math.TriangleVector;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2f;
+import net.sixik.sdmuilibrary.client.utils.misc.LineVectors;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 import net.sixik.sdmuilibrary.client.utils.misc.RGBA;
 import org.joml.Matrix4f;
@@ -65,6 +66,74 @@ public class RenderBuffer2D {
                 Vector2f.of(pos.x + size.x, pos.y),
                 Vector2f.of(pos.x + size.x, pos.y - size.y)
         );
+
+        buffer.addVertex(m, quadVector.pos1.x, quadVector.pos1.y, 0.0F).setColor(r, g, b, a);
+        buffer.addVertex(m, quadVector.pos2.x, quadVector.pos2.y, 0.0F).setColor(r, g, b, a);
+        buffer.addVertex(m, quadVector.pos3.x, quadVector.pos3.y, 0.0F).setColor(r, g, b, a);
+        buffer.addVertex(m, quadVector.pos4.x, quadVector.pos4.y, 0.0F).setColor(r, g, b, a);
+    }
+
+    // Добавляет прямую в буффер
+    public static void addStraightToBuffer(Matrix4f m, VertexConsumer buffer, Vector2f pos, LineVectors vectors ,float _long, float size, int r, int g, int b, int a){
+
+        QuadVector quadVector = null;
+
+        switch (vectors){
+            case VERTICALLY -> quadVector = QuadVector.create(
+                    Vector2f.of(pos.x, pos.y),
+                    Vector2f.of(pos.x, pos.y + _long),
+
+                    Vector2f.of(pos.x + size, pos.y + _long),
+                    Vector2f.of(pos.x + size, pos.y)
+            );
+            case HORIZONTALLY -> quadVector = QuadVector.create(
+                    Vector2f.of(pos.x , pos.y),
+                    Vector2f.of(pos.x, pos.y + size),
+
+                    Vector2f.of(pos.x + _long , pos.y + size ),
+                    Vector2f.of(pos.x + _long ,pos.y)
+            );
+        }
+
+        buffer.addVertex(m, quadVector.pos1.x, quadVector.pos1.y, 0.0F).setColor(r, g, b, a);
+        buffer.addVertex(m, quadVector.pos2.x, quadVector.pos2.y, 0.0F).setColor(r, g, b, a);
+        buffer.addVertex(m, quadVector.pos3.x, quadVector.pos3.y, 0.0F).setColor(r, g, b, a);
+        buffer.addVertex(m, quadVector.pos4.x, quadVector.pos4.y, 0.0F).setColor(r, g, b, a);
+    }
+
+    public static void addLineMagnetToBuffer(Matrix4f m, VertexConsumer buffer, Vector2f pos1, LineVectors magnet1 ,Vector2f pos2, LineVectors magnet2,  float size, int r, int g, int b, int a){
+
+        float pos1x = 0;
+        float pos1y = 0;
+        float pos2x = 0;
+        float pos2y = 0;
+
+        if(magnet1.equals(LineVectors.HORIZONTALLY)) {
+            pos1x = pos1.x ;
+            pos1y = pos1.y + size;
+        }
+        if(magnet1.equals(LineVectors.VERTICALLY)) {
+            pos1x = pos1.x;
+            pos1.x = +size;
+            pos1y = pos1.y ;
+        }
+        if(magnet2.equals(LineVectors.HORIZONTALLY)) {
+            pos2x = pos2.x ;
+            pos2y = pos2.y + size;
+        }
+        if(magnet2.equals(LineVectors.VERTICALLY)) {
+            pos2x = pos2.x - size;
+            pos2y = pos2.y ;
+        }
+
+        QuadVector quadVector =  QuadVector.create(
+                    Vector2f.of(pos1.x, pos1.y),
+                    Vector2f.of(pos1x, pos1y),
+
+                    Vector2f.of(pos2x, pos2y),
+                    Vector2f.of(pos2.x, pos2.y)
+        );
+
 
         buffer.addVertex(m, quadVector.pos1.x, quadVector.pos1.y, 0.0F).setColor(r, g, b, a);
         buffer.addVertex(m, quadVector.pos2.x, quadVector.pos2.y, 0.0F).setColor(r, g, b, a);

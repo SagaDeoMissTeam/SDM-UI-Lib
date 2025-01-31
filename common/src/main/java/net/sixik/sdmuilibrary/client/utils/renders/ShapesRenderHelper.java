@@ -11,6 +11,7 @@ import net.sixik.sdmuilibrary.client.utils.DrawDirection;
 import net.sixik.sdmuilibrary.client.utils.buffers.RenderBuffer2D;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2f;
+import net.sixik.sdmuilibrary.client.utils.misc.LineVectors;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 import net.sixik.sdmuilibrary.client.utils.misc.RGBA;
 import org.joml.Matrix4f;
@@ -39,6 +40,50 @@ public class ShapesRenderHelper {
         BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         RenderBuffer2D.addQuadToBuffer(m, buffer, pos, size, r, g, b, a);
+
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
+    }
+
+    public static void drawStraight(Matrix4f m, Vector2 pos, LineVectors vectors, float _long, float size, RGB rgb) {
+        drawStraight(m, pos.toVector2f(),vectors,_long,size, rgb);
+    }
+
+    public static void drawStraight(Matrix4f m, Vector2f pos, LineVectors vectors, float _long, float size, RGB rgb) {
+        int r = rgb.r;
+        int g = rgb.g;
+        int b = rgb.b;
+        int a = 255;
+        if (rgb instanceof RGBA rgba)
+            a = rgba.a;
+        drawStraight(m, pos, vectors, _long, size, r, g, b, a);
+    }
+
+    public static void drawStraight(Matrix4f m, Vector2f pos, LineVectors vectors, float _long, float size, int r, int g, int b, int a) {
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+        RenderBuffer2D.addStraightToBuffer(m, buffer, pos, vectors, _long, size, r, g, b, a);
+
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
+    }
+
+    public static void drawMagneticLine(Matrix4f m,Vector2 pos1, LineVectors magnet1 ,Vector2 pos2, LineVectors magnet2, float size, RGB rgb) {
+        drawMagneticLine(m, pos1.toVector2f(), magnet1, pos2.toVector2f(), magnet2,size, rgb);
+    }
+
+    public static void drawMagneticLine(Matrix4f m, Vector2f pos1, LineVectors magnet1, Vector2f pos2, LineVectors magnet2, float size, RGB rgb) {
+        int r = rgb.r;
+        int g = rgb.g;
+        int b = rgb.b;
+        int a = 255;
+        if (rgb instanceof RGBA rgba)
+            a = rgba.a;
+        drawMagneticLine(m,  pos1, magnet1, pos2,magnet2, size, r, g, b, a);
+    }
+
+    public static void drawMagneticLine(Matrix4f m, Vector2f pos1, LineVectors magnet1 ,Vector2f pos2, LineVectors magnet2,float size, int r, int g, int b, int a) {
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+        RenderBuffer2D.addLineMagnetToBuffer(m, buffer, pos1, magnet1, pos2,magnet2, size, r, g, b, a);
 
         BufferUploader.drawWithShader(buffer.buildOrThrow());
     }
@@ -152,6 +197,24 @@ public class ShapesRenderHelper {
 
                 // Отрисовка закругленных углов (дуги)
                 drawArc(guiGraphics, new Vector2(x + radius, y + height - radius), radius, -180, -270, rgb); // Левый нижний угол
+                drawArc(guiGraphics, new Vector2(x + width - radius, y + height - radius), radius, 90, 0, rgb); // Правый нижний угол
+                return;
+            }
+            case LEFT -> {
+                drawFillRect(guiGraphics, x + radius, y, width - radius, height , rgb);
+                drawFillRect(guiGraphics, x , y + radius, radius, height - radius * 2, rgb);
+
+                // Отрисовка закругленных углов (дуги)
+                drawArc(guiGraphics, new Vector2(x + radius,   y + radius), radius, 270, 180, rgb); // Левый верхний угол
+                drawArc(guiGraphics, new Vector2(x + radius, y + height - radius), radius, -180, -270, rgb); // Левый нижний угол
+                return;
+            }
+            case RIGHT -> {
+                drawFillRect(guiGraphics, x, y, width - radius, height , rgb);
+                drawFillRect(guiGraphics, x + width - radius , y + radius, radius, height - radius * 2, rgb);
+
+                // Отрисовка закругленных углов (дуги)
+                drawArc(guiGraphics, new Vector2(x + width - radius, y + radius), radius, 0, -90, rgb); // Правый верхний угол
                 drawArc(guiGraphics, new Vector2(x + width - radius, y + height - radius), radius, 90, 0, rgb); // Правый нижний угол
                 return;
             }
