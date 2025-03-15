@@ -53,6 +53,7 @@ public class TestScreen extends BaseScreen {
         //RGBA.create(0,0,0,255).drawMagneticLine(graphics,0,1, LineVectors.VERTICALLY, 50,15, LineVectors.VERTICALLY, 5f);
         ShapesRenderHelper.drawQuad(graphics.pose().last().pose(), new Vector2(50,100),new Vector2(50,50),RGBA.create(0,0,0, 255/2));
         ShapesRenderHelper.drawRoundedRect(graphics,50,50,50,50,3,RGBA.create(0,0,0, 255/2), DrawDirection.RIGHT);
+        ShapesRenderHelper.drawLineTC(graphics,50,50,100,100,0.5f,1);
 
     }
 }

@@ -1,12 +1,16 @@
 package net.sixik.sdmuilibrary.client.utils.renders;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.BufferUploader;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.util.Mth;
 import net.sixik.sdmuilibrary.client.utils.DrawDirection;
 import net.sixik.sdmuilibrary.client.utils.buffers.RenderBuffer2D;
 import net.sixik.sdmuilibrary.client.utils.math.Vector2;
@@ -15,6 +19,7 @@ import net.sixik.sdmuilibrary.client.utils.misc.LineVectors;
 import net.sixik.sdmuilibrary.client.utils.misc.RGB;
 import net.sixik.sdmuilibrary.client.utils.misc.RGBA;
 import org.joml.Matrix4f;
+import java.util.Random;
 
 /**
  * Метод для отрисовки фигур
@@ -223,7 +228,60 @@ public class ShapesRenderHelper {
         throw new UnsupportedOperationException("Not implemented yet for this operation '" + direction.name() + "'");
     }
 
+    public static void drawLineTC(GuiGraphics poseStack, int x, int y, int x2, int y2, float instability, float op) {
+        if (instability > 0.01F) {
+            double dist = Mth.sqrt((x - x2) * (x - x2) + (y - y2) * (y - y2)) * instability;
+            double xd = (double) (x2 - x) / dist;
+            double yd = (double) (y2 - y) / dist;
+            Random rand = new Random();
+            int xr = 0;
+            int yr = 0;
+            int inc = (int) Math.floor(dist - 1.0D);
 
+            int a;
+            for (a = 0; a < inc; ++a) {
+                int xrn = rand.nextInt(2) - rand.nextInt(2);
+                int yrn = rand.nextInt(2) - rand.nextInt(2);
+                drawLineTC( poseStack,
+                        (int) ((double) x + xd * a) + xr, (int) ((double) y + yd * a) + yr,
+                        (int) ((double) x + xd * (a + 1)) + xrn, (int) ((double) y + yd * (a + 1)) + yrn, op);
+                xr = xrn;
+                yr = yrn;
+            }
+
+            drawLineTC(poseStack, (int) ((double) x + xd * a) + xr, (int) ((double) y + yd * a) + yr, x2, y2, op);
+        } else {
+            drawLineTC(poseStack, x, y, x2, y2, op);
+        }
+    }
+
+    public static void drawLineTC(GuiGraphics poseStack, int x, int y, int x2, int y2, float op) {
+        Minecraft mc = Minecraft.getInstance();
+        long count = mc.level.getGameTime();
+
+        float bob = Mth.sin(((float) count + (float) x2) / 10.0F) * 0.15F + 0.15F;
+        float bob2 = Mth.sin(((float) count + (float) x + (float) y2) / 11.0F) * 0.15F + 0.15F;
+        float bob3 = Mth.sin(((float) count + (float) y) / 12.0F) * 0.15F + 0.15F;
+
+        GlStateManager._depthMask(false);
+        GlStateManager._disableCull();
+        RenderSystem.setShader(GameRenderer::getRendertypeLinesShader);
+
+        Tesselator tesselator = RenderSystem.renderThreadTesselator();
+        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
+
+
+
+        RenderSystem.lineWidth(2);
+
+        buffer.addVertex(x, y, 0).setColor(bob, bob2, bob3, op).setNormal(1F,1F,1F);
+        buffer.addVertex(x2, y2, 0).setColor(bob, bob2, bob3, op).setNormal(1F,1F,1F);
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
+
+        RenderSystem.lineWidth(1);
+        GlStateManager._enableCull();
+        GlStateManager._depthMask(true);
+    }
     private static int rgbaToInt(int r, int g, int b, int a) {
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
