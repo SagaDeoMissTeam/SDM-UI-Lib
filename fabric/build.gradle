@@ -33,6 +33,18 @@ dependencies {
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
+
+    modImplementation("io.github.spair:imgui-java-lwjgl3:${rootProject.imguiVersion}")
+    modImplementation("io.github.spair:imgui-java-binding:${rootProject.imguiVersion}")
+    modImplementation("io.github.spair:imgui-java-natives-windows:${rootProject.imguiVersion}")
+    modImplementation("io.github.spair:imgui-java-natives-linux:${rootProject.imguiVersion}")
+    modImplementation("io.github.spair:imgui-java-natives-macos:${rootProject.imguiVersion}")
+
+    include("io.github.spair:imgui-java-lwjgl3:${rootProject.imguiVersion}")
+    include("io.github.spair:imgui-java-binding:${rootProject.imguiVersion}")
+    include("io.github.spair:imgui-java-natives-windows:${rootProject.imguiVersion}")
+    include("io.github.spair:imgui-java-natives-linux:${rootProject.imguiVersion}")
+    include("io.github.spair:imgui-java-natives-macos:${rootProject.imguiVersion}")
 }
 
 processResources {
